@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+
 import * as Location from 'expo-location';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
@@ -11,59 +18,73 @@ export default function AddRideScreen({ navigation }) {
   const [time, setTime] = useState('');
   const [showPicker, setShowPicker] = useState(false);
 
-  // get location when screen loads
   useEffect(() => {
     getCurrentLocation();
   }, []);
 
   async function getCurrentLocation() {
-    const { status } = await Location.requestForegroundPermissionsAsync();
 
-    if (status !== 'granted') {
+    const permission = await Location.requestForegroundPermissionsAsync();
+
+    if (permission.status !== 'granted') {
       return;
     }
 
-    let loc = await Location.getLastKnownPositionAsync();
+    let location = await Location.getLastKnownPositionAsync();
 
-    if (!loc) {
-      loc = await Location.getCurrentPositionAsync({
+    if (!location) {
+
+      location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       });
     }
 
     const address = await Location.reverseGeocodeAsync({
-      latitude: loc.coords.latitude,
-      longitude: loc.coords.longitude,
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
     });
 
     if (address.length > 0) {
+
       const place = address[0];
 
       const fullAddress = [
         place.subregion,
         place.district,
         place.city,
-        place.region
-      ].filter(Boolean).join(', ');
+        place.region,
+      ]
+        .filter(Boolean)
+        .join(', ');
 
       setFrom(fullAddress);
     }
   }
 
-  // when user confirms time from picker
   function handleTimeConfirm(date) {
+
     const hours = date.getHours();
     const minutes = date.getMinutes();
 
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const formattedHour = hours % 12 || 12;
+    let ampm = 'AM';
+
+    if (hours >= 12) {
+      ampm = 'PM';
+    }
+
+    let formattedHour = hours % 12;
+
+    if (formattedHour === 0) {
+      formattedHour = 12;
+    }
+
+    const formattedMinutes = String(minutes).padStart(2, '0');
 
     const finalTime =
-      formattedHour + ':' +
-      String(minutes).padStart(2, '0') +
-      ' ' + ampm;
+      formattedHour + ':' + formattedMinutes + ' ' + ampm;
 
     setTime(finalTime);
+
     setShowPicker(false);
   }
 
@@ -71,12 +92,13 @@ export default function AddRideScreen({ navigation }) {
     setShowPicker(false);
   }
 
-  // create ride button pressed
   function handleCreateRide() {
+
     if (!from || !to) {
       alert('Fill all fields');
       return;
     }
+
     if (!time) {
       alert('Select time');
       return;
@@ -84,22 +106,27 @@ export default function AddRideScreen({ navigation }) {
 
     navigation.navigate('MyRides', {
       newRide: {
-        from,
-        to,
-        vehicle,
-        time
-      }
+        from: from,
+        to: to,
+        vehicle: vehicle,
+        time: time,
+      },
     });
   }
 
   return (
+
     <View style={styles.container}>
 
-      <Text style={styles.title}>Offer a Ride</Text>
+      <Text style={styles.title}>
+        Offer a Ride
+      </Text>
 
       <View style={styles.card}>
 
-        <Text style={styles.label}>From</Text>
+        <Text style={styles.label}>
+          From
+        </Text>
 
         <TouchableOpacity onPress={getCurrentLocation}>
         </TouchableOpacity>
@@ -110,7 +137,10 @@ export default function AddRideScreen({ navigation }) {
           onChangeText={setFrom}
         />
 
-        <Text style={styles.label}>To</Text>
+        <Text style={styles.label}>
+          To
+        </Text>
+
         <TextInput
           style={styles.input}
           placeholder="Enter destination"
@@ -118,48 +148,86 @@ export default function AddRideScreen({ navigation }) {
           onChangeText={setTo}
         />
 
-        <Text style={styles.label}>Departure Time</Text>
+        <Text style={styles.label}>
+          Departure Time
+        </Text>
 
         <TouchableOpacity
           style={styles.input}
           onPress={() => setShowPicker(true)}
         >
-          <Text style={{ color: time ? '#1A2E25' : '#aaa' }}>
-            {time || 'Select Time'}
+
+          <Text
+            style={{
+              color: time ? '#1A2E25' : '#aaa',
+            }}
+          >
+            {time ? time : 'Select Time'}
           </Text>
+
         </TouchableOpacity>
 
-        <Text style={styles.label}>Vehicle Type</Text>
+        <Text style={styles.label}>
+          Vehicle Type
+        </Text>
 
         <View style={styles.row}>
 
           <TouchableOpacity
-            style={[styles.vehicleBtn, vehicle === 'bike' && styles.selected]}
+            style={[
+              styles.vehicleBtn,
+              vehicle === 'bike' && styles.selected,
+            ]}
             onPress={() => setVehicle('bike')}
           >
-            <Text style={vehicle === 'bike' ? styles.selectedText : styles.text}>
+
+            <Text
+              style={
+                vehicle === 'bike'
+                  ? styles.selectedText
+                  : styles.text
+              }
+            >
               Bike
             </Text>
+
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.vehicleBtn, vehicle === 'car' && styles.selected]}
+            style={[
+              styles.vehicleBtn,
+              vehicle === 'car' && styles.selected,
+            ]}
             onPress={() => setVehicle('car')}
           >
-            <Text style={vehicle === 'car' ? styles.selectedText : styles.text}>
+
+            <Text
+              style={
+                vehicle === 'car'
+                  ? styles.selectedText
+                  : styles.text
+              }
+            >
               Car
             </Text>
+
           </TouchableOpacity>
 
         </View>
 
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleCreateRide}>
-        <Text style={styles.buttonText}>Create Ride</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleCreateRide}
+      >
+
+        <Text style={styles.buttonText}>
+          Create Ride
+        </Text>
+
       </TouchableOpacity>
 
-      {/* time picker */}
       <DateTimePickerModal
         isVisible={showPicker}
         mode="time"
@@ -170,7 +238,6 @@ export default function AddRideScreen({ navigation }) {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
 
@@ -221,7 +288,6 @@ const styles = StyleSheet.create({
 
   row: {
     flexDirection: 'row',
-    gap: 10,
     marginTop: 10,
   },
 
@@ -233,6 +299,7 @@ const styles = StyleSheet.create({
     borderColor: '#D4EBE2',
     alignItems: 'center',
     backgroundColor: '#F5FAF7',
+    marginRight: 10,
   },
 
   selected: {

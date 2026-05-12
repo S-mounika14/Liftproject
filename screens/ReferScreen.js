@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function ReferScreen() {
+export default function HistoryScreen() {
     return (
         <View style={styles.center}>
-            <Text style={styles.text}>Refer & Earn </Text>
+            <Text style={styles.text}>Refer Screen </Text>
         </View>
     );
 }

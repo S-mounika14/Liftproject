@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -22,10 +22,16 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
+       "config": {
+        "googleMaps": {
+            "apiKey": "AIzaSyDna9Dx5XiojiFTSETophtWL5T1TXcGZp4"
+        }
+    },
       "package": "com.mounikasompalli.Lift",
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
       ]
     },
     "web": {
@@ -34,7 +40,13 @@
     "plugins": [
       "@react-native-community/datetimepicker",
       "expo-web-browser",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Lift to use your location."
+        }
+      ]
     ],
     "extra": {
       "eas": {

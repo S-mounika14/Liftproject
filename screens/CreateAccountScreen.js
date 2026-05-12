@@ -10,7 +10,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { ALERT_TYPE, Dialog, AlertNotificationRoot } from 'react-native-alert-notification';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-// import SmsRetriever from 'react-native-sms-retriever';
 
 
 export default function AuthScreen({ navigation, route }) {
@@ -21,14 +20,20 @@ export default function AuthScreen({ navigation, route }) {
     const API_BASE = 'https://unlocking-skedaddle-opposing.ngrok-free.dev';
 
     // login states
+
+    // login inputs
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [otp, setOtp] = useState('');
+
+    // login otp
     const [otpSent, setOtpSent] = useState(false);
     const [generatedOtp, setGeneratedOtp] = useState('');
     const [showOtp, setShowOtp] = useState(false);
-    const [loginError, setLoginError] = useState('');
     const [loginOtpVerifying, setLoginOtpVerifying] = useState(false);
+
+    // login ui
+    const [loginError, setLoginError] = useState('');
     const [showLoginPassword, setShowLoginPassword] = useState(false);
 
     // signup states
@@ -68,13 +73,7 @@ export default function AuthScreen({ navigation, route }) {
     //     // removed auto call - now triggered by button
     // }, []);
 
-    // check google login response
-    // useEffect(() => {
-    //     if (response?.type === 'success') {
-    //         const { authentication } = response;
-    //         fetchGoogleUser(authentication.accessToken);
-    //     }
-    // }, [response]);
+
 
     // get google user info using access token
     async function fetchGoogleUser(token) {
@@ -91,6 +90,8 @@ export default function AuthScreen({ navigation, route }) {
             await AsyncStorage.setItem('isLoggedIn', 'true');
             await AsyncStorage.setItem('loginType', 'google');
             await AsyncStorage.setItem('role', role || 'user');
+            await AsyncStorage.setItem('vehicleType', 'bike'); // or 'car' or 'both'
+
 
             Dialog.show({
                 type: ALERT_TYPE.SUCCESS,
@@ -140,13 +141,15 @@ export default function AuthScreen({ navigation, route }) {
 
         // if phone number then generate otp locally
         if (isValidPhone(phone)) {
-            var generated = Math.floor(1000 + Math.random() * 9000).toString();
-            setGeneratedOtp(generated);
+            const genOtp = Math.floor(1000 + Math.random() * 9000).toString();
+
+            setGeneratedOtp(genOtp);
             setOtpSent(true);
-            alert('Your OTP is ' + generated);
+
+            alert('Your OTP is ' + genOtp);
+
             return;
         }
-
         // if email then call backend api
         try {
             const res = await fetch(`${API_BASE}/send-otp`, {
@@ -190,7 +193,7 @@ export default function AuthScreen({ navigation, route }) {
         }
     }
 
-    // verify the otp which user entered on login
+    // verify login otp
     async function handleVerifyOtp() {
 
         if (otp.length < 4) {
@@ -293,7 +296,7 @@ export default function AuthScreen({ navigation, route }) {
             Dialog.show({
                 type: ALERT_TYPE.WARNING,
                 title: 'Required',
-                textBody: 'Please enter phone or email',
+                textBody: 'Enter phone or email',
                 button: 'OK'
             });
             return;
@@ -356,6 +359,7 @@ export default function AuthScreen({ navigation, route }) {
 
     // send otp to email on signup page
     async function handleSendEmailOtp() {
+
         setLoading(true);
         try {
             const controller = new AbortController();
@@ -455,7 +459,7 @@ export default function AuthScreen({ navigation, route }) {
         }
     }
 
-    // send otp to phone on signup page
+    // send phone otp
     function handleSendPhoneOtp() {
         if (!isValidPhone(signupPhone)) {
             Dialog.show({
@@ -527,20 +531,29 @@ export default function AuthScreen({ navigation, route }) {
 
     // handle phone input change on signup page
     function handleSignupPhoneChange(text) {
-        const cleaned = text.replace(/[^0-9]/g, '');
-        if (cleaned.length <= 10) {
-            setSignupPhone(cleaned);
+
+        const cleanedNumber = text.replace(/[^0-9]/g, '');
+
+        if (cleanedNumber.length <= 10) {
+
+            setSignupPhone(cleanedNumber);
             setPhoneOtp('');
             setPhoneOtpSent(false);
             setPhoneVerified(false);
-            if (!cleaned) {
+
+            if (!cleanedNumber) {
                 setPhoneError('Phone number is required');
-            } else if (cleaned.length < 10) {
+
+            } else if (cleanedNumber.length < 10) {
                 setPhoneError('Phone number must be 10 digits');
-            } else if (!/^[6-9]/.test(cleaned)) {
+
+            } else if (!/^[6-9]/.test(cleanedNumber)) {
+
                 setPhoneError('Phone must start with 6, 7, 8, or 9');
                 setSignupPhone('');
+
             } else {
+
                 setPhoneError('');
                 Keyboard.dismiss();
             }
@@ -605,7 +618,7 @@ export default function AuthScreen({ navigation, route }) {
             Dialog.show({
                 type: ALERT_TYPE.WARNING,
                 title: 'Required',
-                textBody: 'Please enter a password',
+                textBody: 'Enter password',
                 button: 'OK'
             });
             return;
@@ -629,8 +642,9 @@ export default function AuthScreen({ navigation, route }) {
         await AsyncStorage.setItem('email', email);
         await AsyncStorage.setItem('password', signupPassword);
         await AsyncStorage.setItem('role', role);
+        await AsyncStorage.setItem('vehicleType', 'bike');
 
-        // navigate based on role
+        // go to next screen
         if (role === 'user') {
             navigation.reset({ index: 0, routes: [{ name: 'LiftSeekerMain' }] });
         } else {
@@ -683,12 +697,12 @@ export default function AuthScreen({ navigation, route }) {
                         {activeTab === 'login' && (
                             <KeyboardAwareScrollView
                                 style={{ flex: 1 }}
-                                contentContainerStyle={styles.body}
-                                showsVerticalScrollIndicator={false}
+                                contentContainerStyle={[styles.body, { flexGrow: 1 }]}
+                                showsVerticalScrollIndicator
                                 keyboardShouldPersistTaps="handled"
-                                enableOnAndroid={true}
+                                enableOnAndroid
                                 extraScrollHeight={20}
-                                enableAutomaticScroll={true}
+                                enableAutomaticScroll
                             >
                                 <View style={styles.phoneRow}>
                                     <TextInput
@@ -698,7 +712,7 @@ export default function AuthScreen({ navigation, route }) {
                                         onChangeText={handleLoginPhoneChange}
                                         keyboardType="email-address"
                                         autoCapitalize="none"
-                                       // onFocus={autoDetectPhone}
+                                    // onFocus={autoDetectPhone}
                                     />
                                     {/* <TouchableOpacity
                                         style={styles.simBtn}
@@ -924,7 +938,7 @@ export default function AuthScreen({ navigation, route }) {
                                         keyboardType="number-pad"
                                         maxLength={10}
                                         editable={!phoneVerified}
-                                        //onFocus={autoDetectPhone}
+                                    //onFocus={autoDetectPhone}
                                     />
                                     <TouchableOpacity
                                         style={[
@@ -1100,26 +1114,11 @@ const styles = StyleSheet.create({
 
     phoneRow: {
         flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
+        alignItems: 'flex-end',
         marginTop: 10,
     },
 
-    // simBtn: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     backgroundColor: '#0C7A54',
-    //     paddingHorizontal: 12,
-    //     paddingVertical: 11,
-    //     borderRadius: 50,
-    //     gap: 4,
-    // },
 
-    simBtnText: {
-        color: '#fff',
-        fontSize: 11,
-        fontWeight: '700',
-    },
 
     tab: {
         flex: 1,
@@ -1151,6 +1150,7 @@ const styles = StyleSheet.create({
     },
 
     input: {
+        flex: 1,
         backgroundColor: '#F5FAF7',
         borderWidth: 1,
         borderColor: '#D4EBE2',

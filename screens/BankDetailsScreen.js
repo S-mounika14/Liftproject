@@ -1,7 +1,19 @@
+
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    ScrollView,
+    Image,
+    Alert,
+    KeyboardAvoidingView,
+    Platform
+} from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
-import { KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function BankDetailsScreen({ navigation }) {
@@ -13,61 +25,76 @@ export default function BankDetailsScreen({ navigation }) {
     const [bankAddress, setBankAddress] = useState('');
     const [pan, setPan] = useState('');
 
-    // check if ifsc code is valid
-    function isValidIfsc(code) {
-        return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(code);
-    }
-
-    // check if pan number is valid
-    function isValidPan(pan) {
-        return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan);
-    }
-
-    // load saved bank details when screen opens
     useEffect(() => {
         loadSavedData();
     }, []);
 
-    async function loadSavedData() {
-        try {
-            let savedBankName = await AsyncStorage.getItem('bankName');
-            let savedAccountNo = await AsyncStorage.getItem('accountNo');
-            let savedAccountType = await AsyncStorage.getItem('accountType');
-            let savedIfsc = await AsyncStorage.getItem('ifsc');
-            let savedBankAddress = await AsyncStorage.getItem('bankAddress');
+    function isValidIfsc(code) {
+        return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(code);
+    }
 
-            if (savedBankName != null) setBankName(savedBankName);
-            if (savedAccountNo != null) setAccountNo(savedAccountNo);
-            if (savedAccountType != null) setAccountType(savedAccountType);
-            if (savedIfsc != null) setIfsc(savedIfsc);
-            if (savedBankAddress != null) setBankAddress(savedBankAddress);
-        } catch (e) {
-            console.log('error loading bank data', e);
+    function isValidPan(value) {
+        return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value);
+    }
+
+    async function loadSavedData() {
+
+        try {
+
+            const savedBankName = await AsyncStorage.getItem('bankName');
+            const savedAccountNo = await AsyncStorage.getItem('accountNo');
+            const savedAccountType = await AsyncStorage.getItem('accountType');
+            const savedIfsc = await AsyncStorage.getItem('ifsc');
+            const savedBankAddress = await AsyncStorage.getItem('bankAddress');
+
+            if (savedBankName) {
+                setBankName(savedBankName);
+            }
+
+            if (savedAccountNo) {
+                setAccountNo(savedAccountNo);
+            }
+
+            if (savedAccountType) {
+                setAccountType(savedAccountType);
+            }
+
+            if (savedIfsc) {
+                setIfsc(savedIfsc);
+            }
+
+            if (savedBankAddress) {
+                setBankAddress(savedBankAddress);
+            }
+
+        } catch (error) {
+            console.log('Error loading bank data:', error);
         }
     }
 
-    // handle account number input - only allow numbers
     function handleAccountNoChange(text) {
-        if (/^\d*$/.test(text) && text.length <= 18) {
+
+        const numbersOnly = /^\d*$/;
+
+        if (numbersOnly.test(text) && text.length <= 18) {
             setAccountNo(text);
         }
     }
 
-    // handle ifsc input - make it uppercase
     function handleIfscChange(text) {
+
         if (text.length <= 11) {
             setIfsc(text.toUpperCase());
         }
     }
 
-    // handle pan input - make it uppercase
     function handlePanChange(text) {
+
         if (text.length <= 10) {
             setPan(text.toUpperCase());
         }
     }
 
-    // validate and go to next screen
     async function handleNext() {
 
         if (!bankName.trim()) {
@@ -76,36 +103,56 @@ export default function BankDetailsScreen({ navigation }) {
         }
 
         if (accountNo.length < 10 || accountNo.length > 18) {
-            Alert.alert('Required', 'Account number must be 10–18 digits');
+            Alert.alert(
+                'Required',
+                'Account number must be 10–18 digits'
+            );
             return;
         }
 
         if (bankName === 'SBI' && accountNo.length !== 11) {
-            Alert.alert('Invalid', 'SBI account number must be 11 digits');
+            Alert.alert(
+                'Invalid',
+                'SBI account number must be 11 digits'
+            );
             return;
         }
 
-        if (bankName === 'HDFC' && (accountNo.length < 13 || accountNo.length > 14)) {
-            Alert.alert('Invalid', 'HDFC account number must be 13–14 digits');
+        if (
+            bankName === 'HDFC' &&
+            (accountNo.length < 13 || accountNo.length > 14)
+        ) {
+            Alert.alert(
+                'Invalid',
+                'HDFC account number must be 13–14 digits'
+            );
             return;
         }
 
         if (!isValidIfsc(ifsc)) {
-            Alert.alert('Required', 'Please enter a valid IFSC code');
+            Alert.alert(
+                'Required',
+                'Please enter a valid IFSC code'
+            );
             return;
         }
 
         if (!isValidPan(pan)) {
-            Alert.alert('Required', 'Enter valid PAN number');
+            Alert.alert(
+                'Required',
+                'Enter valid PAN number'
+            );
             return;
         }
 
         if (!bankAddress.trim()) {
-            Alert.alert('Required', 'Please enter bank branch address');
+            Alert.alert(
+                'Required',
+                'Please enter bank branch address'
+            );
             return;
         }
 
-        // save all data to storage
         await AsyncStorage.setItem('bankName', bankName);
         await AsyncStorage.setItem('accountNo', accountNo);
         await AsyncStorage.setItem('accountType', accountType);
@@ -117,50 +164,90 @@ export default function BankDetailsScreen({ navigation }) {
     }
 
     return (
+
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+
             <View style={styles.container}>
 
-                {/* header */}
-                <LinearGradient colors={['#0C7A54', '#1270B8']} style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+                <LinearGradient
+                    colors={['#0C7A54', '#1270B8']}
+                    style={styles.header}
+                >
+
+                    <TouchableOpacity
+                        style={styles.backBtn}
+                        onPress={() => navigation.goBack()}
+                    >
+
                         <Image
                             source={require('../assets/arrow.png')}
-                            style={{ width: 30, height: 30, resizeMode: 'contain', tintColor: '#fff' }}
+                            style={styles.backImage}
                         />
+
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Bank Details</Text>
+
+                    <Text style={styles.headerTitle}>
+                        Bank Details
+                    </Text>
+
                     <View style={{ width: 30 }} />
+
                 </LinearGradient>
 
-                {/* step progress bar */}
                 <View style={styles.stepsRow}>
+
                     <View style={[styles.step, styles.stepDone]} />
                     <View style={[styles.step, styles.stepDone]} />
                     <View style={[styles.step, styles.stepActive]} />
                     <View style={styles.step} />
                     <View style={styles.step} />
+
                 </View>
 
-                <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+                <ScrollView
+                    style={styles.body}
+                    showsVerticalScrollIndicator={false}
+                >
 
-                    {/* bank name radio buttons */}
-                    <Text style={styles.label}>Bank Name</Text>
+                    <Text style={styles.label}>
+                        Bank Name
+                    </Text>
+
                     <View style={styles.radioRow}>
+
                         {['SBI', 'HDFC', 'ICICI', 'AXIS'].map((bank) => (
-                            <TouchableOpacity key={bank} style={styles.radioOption} onPress={() => setBankName(bank)}>
+
+                            <TouchableOpacity
+                                key={bank}
+                                style={styles.radioOption}
+                                onPress={() => setBankName(bank)}
+                            >
+
                                 <View style={styles.radioOuter}>
-                                    {bankName === bank && <View style={styles.radioInner} />}
+
+                                    {bankName === bank && (
+                                        <View style={styles.radioInner} />
+                                    )}
+
                                 </View>
-                                <Text style={styles.radioLabel}>{bank}</Text>
+
+                                <Text style={styles.radioLabel}>
+                                    {bank}
+                                </Text>
+
                             </TouchableOpacity>
+
                         ))}
+
                     </View>
 
-                    {/* account number input */}
-                    <Text style={styles.label}>Account Number</Text>
+                    <Text style={styles.label}>
+                        Account Number
+                    </Text>
+
                     <TextInput
                         style={styles.input}
                         placeholder="Enter account number"
@@ -170,28 +257,56 @@ export default function BankDetailsScreen({ navigation }) {
                         maxLength={18}
                     />
 
-                    {/* account type radio buttons */}
-                    <Text style={styles.label}>Account Type</Text>
+                    <Text style={styles.label}>
+                        Account Type
+                    </Text>
+
                     <View style={styles.radioRow}>
 
-                        <TouchableOpacity style={styles.radioOption} onPress={() => setAccountType('current')}>
+                        <TouchableOpacity
+                            style={styles.radioOption}
+                            onPress={() => setAccountType('current')}
+                        >
+
                             <View style={styles.radioOuter}>
-                                {accountType === 'current' && <View style={styles.radioInner} />}
+
+                                {accountType === 'current' && (
+                                    <View style={styles.radioInner} />
+                                )}
+
                             </View>
-                            <Text style={styles.radioLabel}>Current</Text>
+
+                            <Text style={styles.radioLabel}>
+                                Current
+                            </Text>
+
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.radioOption} onPress={() => setAccountType('savings')}>
+                        <TouchableOpacity
+                            style={styles.radioOption}
+                            onPress={() => setAccountType('savings')}
+                        >
+
                             <View style={styles.radioOuter}>
-                                {accountType === 'savings' && <View style={styles.radioInner} />}
+
+                                {accountType === 'savings' && (
+                                    <View style={styles.radioInner} />
+                                )}
+
                             </View>
-                            <Text style={styles.radioLabel}>Savings</Text>
+
+                            <Text style={styles.radioLabel}>
+                                Savings
+                            </Text>
+
                         </TouchableOpacity>
 
                     </View>
 
-                    {/* ifsc code input */}
-                    <Text style={styles.label}>IFSC Code</Text>
+                    <Text style={styles.label}>
+                        IFSC Code
+                    </Text>
+
                     <TextInput
                         style={styles.input}
                         placeholder="e.g. SBIN0001234"
@@ -200,12 +315,19 @@ export default function BankDetailsScreen({ navigation }) {
                         autoCapitalize="characters"
                         maxLength={11}
                     />
+
                     {ifsc.length > 0 && !isValidIfsc(ifsc) && (
-                        <Text style={styles.errorText}>Invalid IFSC. Format: ABCD0123456</Text>
+
+                        <Text style={styles.errorText}>
+                            Invalid IFSC. Format: ABCD0123456
+                        </Text>
+
                     )}
 
-                    {/* pan number input */}
-                    <Text style={styles.label}>PAN Number</Text>
+                    <Text style={styles.label}>
+                        PAN Number
+                    </Text>
+
                     <TextInput
                         style={styles.input}
                         placeholder="ABCDE1234F"
@@ -213,12 +335,19 @@ export default function BankDetailsScreen({ navigation }) {
                         onChangeText={handlePanChange}
                         maxLength={10}
                     />
+
                     {pan.length > 0 && !isValidPan(pan) && (
-                        <Text style={styles.errorText}>Invalid PAN format</Text>
+
+                        <Text style={styles.errorText}>
+                            Invalid PAN format
+                        </Text>
+
                     )}
 
-                    {/* bank address input */}
-                    <Text style={styles.label}>Bank Branch Address</Text>
+                    <Text style={styles.label}>
+                        Bank Branch Address
+                    </Text>
+
                     <TextInput
                         style={[styles.input, styles.textArea]}
                         placeholder="Enter bank branch address"
@@ -228,19 +357,31 @@ export default function BankDetailsScreen({ navigation }) {
                         numberOfLines={3}
                     />
 
-                    <TouchableOpacity style={styles.nextBtn} onPress={handleNext}>
-                        <LinearGradient colors={['#0C7A54', '#1270B8']} style={styles.nextBtnGrad}>
-                            <Text style={styles.nextBtnText}>Next →</Text>
+                    <TouchableOpacity
+                        style={styles.nextBtn}
+                        onPress={handleNext}
+                    >
+
+                        <LinearGradient
+                            colors={['#0C7A54', '#1270B8']}
+                            style={styles.nextBtnGrad}
+                        >
+
+                            <Text style={styles.nextBtnText}>
+                                Next →
+                            </Text>
+
                         </LinearGradient>
+
                     </TouchableOpacity>
 
                 </ScrollView>
 
             </View>
+
         </KeyboardAvoidingView>
     );
 }
-
 
 const styles = StyleSheet.create({
 
@@ -264,6 +405,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
+    backImage: {
+        width: 30,
+        height: 30,
+        resizeMode: 'contain',
+        tintColor: '#fff',
+    },
+
     headerTitle: {
         flex: 1,
         color: '#fff',
@@ -274,7 +422,6 @@ const styles = StyleSheet.create({
 
     stepsRow: {
         flexDirection: 'row',
-        gap: 5,
         justifyContent: 'center',
         paddingVertical: 12,
     },
@@ -284,6 +431,7 @@ const styles = StyleSheet.create({
         height: 4,
         borderRadius: 2,
         backgroundColor: '#D4EBE2',
+        marginHorizontal: 2,
     },
 
     stepActive: {
@@ -320,15 +468,14 @@ const styles = StyleSheet.create({
 
     radioRow: {
         flexDirection: 'row',
-        gap: 24,
-        marginBottom: 4,
         marginTop: 4,
+        marginBottom: 4,
     },
 
     radioOption: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
+        marginRight: 24,
     },
 
     radioOuter: {
@@ -352,6 +499,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: '#1A2E25',
         fontWeight: '500',
+        marginLeft: 8,
     },
 
     textArea: {
@@ -384,3 +532,4 @@ const styles = StyleSheet.create({
     },
 
 });
+
