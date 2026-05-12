@@ -24,8 +24,25 @@ import WalletScreen from './screens/WalletScreen';
 import * as Battery from 'expo-battery';
 import { useState, useEffect } from 'react';
 import { Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import AddressScreen from './screens/AddressScreen';
+
+
+import SearchingScreen from './screens/SearchingScreen';
+import NoRideScreen from './screens/NoRideScreen';
+import RideAcceptedScreen from './screens/RideAcceptedScreen';
+import RideStartedScreen from './screens/RideStartedScreen';
+
+import NavigateToSeekerScreen from './screens/Navigatetoseekerscreen';
+import QRVerifyScreen from './screens/QRVerifyScreen';
+import RideInProgressScreen from './screens/Rideinprogressscreen';
+
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const HomeStack = createStackNavigator();
+const ContributorHomeStack = createStackNavigator();
+
+
 
 function BottomTabs({ route }) {
   const { name, lastName, phone } = route.params || {};
@@ -48,7 +65,9 @@ function BottomTabs({ route }) {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={MapScreen} />
+      <Tab.Screen name="Home" component={ContributorHomeStackNavigator} />
+
+
       {/* <Tab.Screen name="AddRide" component={AddRideScreen} /> */}
       <Tab.Screen name="MyRides" component={MyRidesScreen} />
 
@@ -79,13 +98,47 @@ function LiftSeekerTabs() {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={LiftSeekerHomeScreen} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Refer" component={ReferScreen} />
       <Tab.Screen name="History" component={HistoryScreen} />
 
       <Tab.Screen name="Profile" component={LiftSeekerProfileScreen} />
+      <Tab.Screen
+        name="Address"
+        component={AddressScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="location-outline" size={size} color={color} />
+          ),
+          tabBarLabel: 'Address'
+        }}
+      />
 
     </Tab.Navigator>
+  );
+}
+
+function HomeStackNavigator() {
+  return (
+    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+      <HomeStack.Screen name="LiftSeekerHome" component={LiftSeekerHomeScreen} />
+      <HomeStack.Screen name="Searching" component={SearchingScreen} />
+      <HomeStack.Screen name="NoRide" component={NoRideScreen} />
+      <HomeStack.Screen name="RideAccepted" component={RideAcceptedScreen} />
+      <HomeStack.Screen name="RideStarted" component={RideStartedScreen} />
+
+    </HomeStack.Navigator>
+  );
+}
+
+function ContributorHomeStackNavigator() {
+  return (
+    <ContributorHomeStack.Navigator screenOptions={{ headerShown: false }}>
+      <ContributorHomeStack.Screen name="Map" component={MapScreen} />
+      <ContributorHomeStack.Screen name="NavigateToSeeker" component={NavigateToSeekerScreen} />
+      <ContributorHomeStack.Screen name="QRVerify" component={QRVerifyScreen} />
+      <ContributorHomeStack.Screen name="RideInProgress" component={RideInProgressScreen} />
+    </ContributorHomeStack.Navigator>
   );
 }
 
@@ -102,7 +155,7 @@ export default function App() {
 
     // listen for changes
     const subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
-      
+
       if (batteryLevel < 0.64) setLowBattery(true);
       else setLowBattery(false);
     });

@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    ScrollView,
+    Alert,
+    Image,
+} from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -11,100 +21,196 @@ export default function EmergencyContactScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
 
-    // check if email format is correct
-    function isValidEmail(text) {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/;
-        return emailRegex.test(text);
-    }
-
-    // load saved data when screen opens
     useEffect(() => {
         loadSavedData();
     }, []);
 
-    async function loadSavedData() {
-        try {
-            let savedContactName = await AsyncStorage.getItem('contactName');
-            let savedRelationship = await AsyncStorage.getItem('relationship');
-            let savedPhone = await AsyncStorage.getItem('emergencyPhone');
-            let savedEmail = await AsyncStorage.getItem('emergencyEmail');
+    //EMAIL VALIDATION 
 
-            if (savedContactName != null) setContactName(savedContactName);
-            if (savedRelationship != null) setRelationship(savedRelationship);
-            if (savedPhone != null) setPhone(savedPhone);
-            if (savedEmail != null) setEmail(savedEmail);
-        } catch (e) {
-            console.log('error loading data', e);
+    function isValidEmail(text) {
+
+        const emailRegex =
+            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+
+        return emailRegex.test(text);
+    }
+
+    //LOAD SAVED DATA 
+
+    async function loadSavedData() {
+
+        try {
+
+            const savedContactName =
+                await AsyncStorage.getItem('contactName');
+
+            const savedRelationship =
+                await AsyncStorage.getItem('relationship');
+
+            const savedPhone =
+                await AsyncStorage.getItem('emergencyPhone');
+
+            const savedEmail =
+                await AsyncStorage.getItem('emergencyEmail');
+
+            if (savedContactName) {
+                setContactName(savedContactName);
+            }
+
+            if (savedRelationship) {
+                setRelationship(savedRelationship);
+            }
+
+            if (savedPhone) {
+                setPhone(savedPhone);
+            }
+
+            if (savedEmail) {
+                setEmail(savedEmail);
+            }
+
+        } catch (error) {
+            console.log('Error loading data', error);
         }
     }
 
-    // handle email input and show error if invalid
+    // EMAIL INPUT
+
     function handleEmailChange(text) {
+
         setEmail(text);
-        if (!text) {
+
+        if (!text.trim()) {
+
             setEmailError('Email is required');
+
         } else if (!isValidEmail(text)) {
+
             setEmailError('Invalid email format');
+
         } else {
+
             setEmailError('');
         }
     }
 
-    // handle phone input - only allow 10 digits
+    //  PHONE INPUT
+
     function handlePhoneChange(text) {
-        if (text.length <= 10) {
-            setPhone(text);
+
+        // only numbers allowed
+        const cleanedText = text.replace(/[^0-9]/g, '');
+
+        if (cleanedText.length <= 10) {
+            setPhone(cleanedText);
         }
     }
 
-    // validate all fields and go to next screen
+    // NEXT BUTTON
     async function handleNext() {
 
         if (!contactName.trim()) {
-            Alert.alert('Required', 'Please enter contact name');
+
+            Alert.alert(
+                'Required',
+                'Please enter contact name'
+            );
+
             return;
         }
 
         if (!relationship.trim()) {
-            Alert.alert('Required', 'Please enter relationship');
+
+            Alert.alert(
+                'Required',
+                'Please enter relationship'
+            );
+
             return;
         }
 
         if (phone.length < 10) {
-            Alert.alert('Required', 'Please enter a valid 10 digit phone number');
+
+            Alert.alert(
+                'Required',
+                'Please enter a valid 10 digit phone number'
+            );
+
             return;
         }
 
         if (!isValidEmail(email)) {
-            Alert.alert('Required', 'Please enter a valid email address');
+
+            Alert.alert(
+                'Required',
+                'Please enter a valid email address'
+            );
+
             return;
         }
 
-        // save all data to storage
-        await AsyncStorage.setItem('contactName', contactName);
-        await AsyncStorage.setItem('relationship', relationship);
-        await AsyncStorage.setItem('emergencyPhone', phone);
-        await AsyncStorage.setItem('emergencyEmail', email);
+        try {
 
-        navigation.navigate('VehicleInfo');
+            // save data
+            await AsyncStorage.setItem(
+                'contactName',
+                contactName
+            );
+
+            await AsyncStorage.setItem(
+                'relationship',
+                relationship
+            );
+
+            await AsyncStorage.setItem(
+                'emergencyPhone',
+                phone
+            );
+
+            await AsyncStorage.setItem(
+                'emergencyEmail',
+                email
+            );
+
+            navigation.navigate('VehicleInfo');
+
+        } catch (error) {
+
+            console.log('Storage save error', error);
+        }
     }
 
     return (
+
         <View style={styles.container}>
 
-            {/* header */}
-            <LinearGradient colors={['#0C7A54', '#1270B8']} style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+
+            <LinearGradient
+                colors={['#0C7A54', '#1270B8']}
+                style={styles.header}
+            >
+
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={styles.backBtn}
+                >
+
                     <Image
                         source={require('../assets/arrow.png')}
-                        style={{ width: 30, height: 30, resizeMode: 'contain', tintColor: '#fff' }}
+                        style={styles.backIcon}
                     />
+
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Emergency Contact</Text>
+
+                <Text style={styles.headerTitle}>
+                    Emergency Contact
+                </Text>
+
                 <View style={{ width: 30 }} />
+
             </LinearGradient>
 
-            {/* step progress bar */}
+
             <View style={styles.stepsRow}>
                 <View style={[styles.step, styles.stepDone]} />
                 <View style={[styles.step, styles.stepDone]} />
@@ -113,9 +219,16 @@ export default function EmergencyContactScreen({ navigation }) {
                 <View style={styles.step} />
             </View>
 
-            <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+            <ScrollView
+                style={styles.body}
+                showsVerticalScrollIndicator={false}
+            >
 
-                <Text style={styles.label}>Contact Name</Text>
+
+                <Text style={styles.label}>
+                    Contact Name
+                </Text>
+
                 <TextInput
                     style={styles.input}
                     placeholder="Enter contact name"
@@ -123,7 +236,11 @@ export default function EmergencyContactScreen({ navigation }) {
                     onChangeText={setContactName}
                 />
 
-                <Text style={styles.label}>Relationship</Text>
+
+                <Text style={styles.label}>
+                    Relationship
+                </Text>
+
                 <TextInput
                     style={styles.input}
                     placeholder="e.g. Spouse, Parent, Friend"
@@ -131,7 +248,11 @@ export default function EmergencyContactScreen({ navigation }) {
                     onChangeText={setRelationship}
                 />
 
-                <Text style={styles.label}>Phone Number</Text>
+
+                <Text style={styles.label}>
+                    Phone Number
+                </Text>
+
                 <TextInput
                     style={styles.input}
                     placeholder="+91 XXXXX XXXXX"
@@ -141,7 +262,11 @@ export default function EmergencyContactScreen({ navigation }) {
                     maxLength={10}
                 />
 
-                <Text style={styles.label}>Email Address</Text>
+
+                <Text style={styles.label}>
+                    Email Address
+                </Text>
+
                 <TextInput
                     style={styles.input}
                     placeholder="Enter email address"
@@ -150,12 +275,30 @@ export default function EmergencyContactScreen({ navigation }) {
                     keyboardType="email-address"
                     autoCapitalize="none"
                 />
-                {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
-                <TouchableOpacity style={styles.nextBtn} onPress={handleNext}>
-                    <LinearGradient colors={['#0C7A54', '#1270B8']} style={styles.nextBtnGrad}>
-                        <Text style={styles.nextBtnText}>Next →</Text>
+                {emailError ? (
+                    <Text style={styles.errorText}>
+                        {emailError}
+                    </Text>
+                ) : null}
+
+
+                <TouchableOpacity
+                    style={styles.nextBtn}
+                    onPress={handleNext}
+                >
+
+                    <LinearGradient
+                        colors={['#0C7A54', '#1270B8']}
+                        style={styles.nextBtnGrad}
+                    >
+
+                        <Text style={styles.nextBtnText}>
+                            Next →
+                        </Text>
+
                     </LinearGradient>
+
                 </TouchableOpacity>
 
             </ScrollView>
@@ -163,7 +306,6 @@ export default function EmergencyContactScreen({ navigation }) {
         </View>
     );
 }
-
 
 const styles = StyleSheet.create({
 
@@ -185,6 +327,13 @@ const styles = StyleSheet.create({
         height: 30,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+
+    backIcon: {
+        width: 30,
+        height: 30,
+        resizeMode: 'contain',
+        tintColor: '#fff',
     },
 
     headerTitle: {
@@ -264,5 +413,5 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 14,
     },
-
 });
+
