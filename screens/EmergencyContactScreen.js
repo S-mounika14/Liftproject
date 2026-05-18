@@ -21,6 +21,10 @@ export default function EmergencyContactScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
 
+    const NAVY = '#1B2A6B';
+    const LIGHT_NAVY = '#2A3F8F';
+    const ORANGE = '#F5820A';
+
     useEffect(() => {
         loadSavedData();
     }, []);
@@ -186,7 +190,7 @@ export default function EmergencyContactScreen({ navigation }) {
 
 
             <LinearGradient
-                colors={['#0C7A54', '#1270B8']}
+                colors={[NAVY, LIGHT_NAVY, NAVY]}
                 style={styles.header}
             >
 
@@ -232,6 +236,7 @@ export default function EmergencyContactScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="Enter contact name"
+                      placeholderTextColor="#8896B3"
                     value={contactName}
                     onChangeText={setContactName}
                 />
@@ -244,6 +249,7 @@ export default function EmergencyContactScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="e.g. Spouse, Parent, Friend"
+                      placeholderTextColor="#8896B3"
                     value={relationship}
                     onChangeText={setRelationship}
                 />
@@ -256,6 +262,7 @@ export default function EmergencyContactScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="+91 XXXXX XXXXX"
+                      placeholderTextColor="#8896B3"
                     value={phone}
                     onChangeText={handlePhoneChange}
                     keyboardType="phone-pad"
@@ -270,6 +277,7 @@ export default function EmergencyContactScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="Enter email address"
+                      placeholderTextColor="#8896B3"
                     value={email}
                     onChangeText={handleEmailChange}
                     keyboardType="email-address"
@@ -289,7 +297,7 @@ export default function EmergencyContactScreen({ navigation }) {
                 >
 
                     <LinearGradient
-                        colors={['#0C7A54', '#1270B8']}
+                        colors={[NAVY, LIGHT_NAVY, NAVY]}
                         style={styles.nextBtnGrad}
                     >
 
@@ -355,17 +363,17 @@ const styles = StyleSheet.create({
         width: 20,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#D4EBE2',
+        backgroundColor: '#D6DBF0',
     },
 
     stepActive: {
         width: 30,
-        backgroundColor: '#0C7A54',
+        backgroundColor: '#1b2a6b',
     },
 
     stepDone: {
         width: 22,
-        backgroundColor: '#22C98A',
+        backgroundColor: '#f5820a',
     },
 
     body: {
@@ -374,20 +382,20 @@ const styles = StyleSheet.create({
 
     label: {
         fontSize: 11,
-        fontWeight: '600',
-        color: '#7A9490',
+        fontWeight: '700',
+        color: '#1b2a6b',
         marginBottom: 5,
         marginTop: 14,
     },
 
     input: {
-        backgroundColor: '#F5FAF7',
-        borderWidth: 1,
-        borderColor: '#D4EBE2',
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#f5820a',
         borderRadius: 10,
         padding: 11,
         fontSize: 13,
-        color: '#1A2E25',
+        color: '#1b246b',
     },
 
     errorText: {

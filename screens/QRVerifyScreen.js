@@ -10,7 +10,17 @@ import {
 
 export default function QRVerifyScreen({ route, navigation }) {
 
-    const { rideRequest } = route.params;
+
+    const rideRequest = route?.params?.rideRequest;
+     if (!rideRequest) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.heading}>
+                    Ride request not found
+                </Text>
+            </View>
+        );
+    }
 
     const [digits, setDigits] = useState(['', '', '', '']);
 

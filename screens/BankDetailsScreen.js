@@ -25,6 +25,10 @@ export default function BankDetailsScreen({ navigation }) {
     const [bankAddress, setBankAddress] = useState('');
     const [pan, setPan] = useState('');
 
+    const NAVY = '#1B2A6B';
+    const LIGHT_NAVY = '#2A3F8F';
+    const ORANGE = '#F5820A';
+
     useEffect(() => {
         loadSavedData();
     }, []);
@@ -173,7 +177,7 @@ export default function BankDetailsScreen({ navigation }) {
             <View style={styles.container}>
 
                 <LinearGradient
-                    colors={['#0C7A54', '#1270B8']}
+                    colors={[NAVY, LIGHT_NAVY, NAVY]}
                     style={styles.header}
                 >
 
@@ -252,6 +256,8 @@ export default function BankDetailsScreen({ navigation }) {
                         style={styles.input}
                         placeholder="Enter account number"
                         value={accountNo}
+                                                placeholderTextColor="#2A3F8F"
+
                         onChangeText={handleAccountNoChange}
                         keyboardType="number-pad"
                         maxLength={18}
@@ -311,6 +317,8 @@ export default function BankDetailsScreen({ navigation }) {
                         style={styles.input}
                         placeholder="e.g. SBIN0001234"
                         value={ifsc}
+                                                placeholderTextColor="#2A3F8F"
+
                         onChangeText={handleIfscChange}
                         autoCapitalize="characters"
                         maxLength={11}
@@ -331,6 +339,8 @@ export default function BankDetailsScreen({ navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder="ABCDE1234F"
+                                                placeholderTextColor="#2A3F8F"
+
                         value={pan}
                         onChangeText={handlePanChange}
                         maxLength={10}
@@ -352,6 +362,7 @@ export default function BankDetailsScreen({ navigation }) {
                         style={[styles.input, styles.textArea]}
                         placeholder="Enter bank branch address"
                         value={bankAddress}
+                        placeholderTextColor="#2A3F8F"
                         onChangeText={setBankAddress}
                         multiline
                         numberOfLines={3}
@@ -363,7 +374,7 @@ export default function BankDetailsScreen({ navigation }) {
                     >
 
                         <LinearGradient
-                            colors={['#0C7A54', '#1270B8']}
+                            colors={[NAVY, LIGHT_NAVY, NAVY]}
                             style={styles.nextBtnGrad}
                         >
 
@@ -430,18 +441,18 @@ const styles = StyleSheet.create({
         width: 20,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#D4EBE2',
+        backgroundColor: '#D6DBF0',
         marginHorizontal: 2,
     },
 
     stepActive: {
         width: 30,
-        backgroundColor: '#0C7A54',
+        backgroundColor: '#1B2A6B',
     },
 
     stepDone: {
         width: 22,
-        backgroundColor: '#22C98A',
+        backgroundColor: '#F5820A',
     },
 
     body: {
@@ -451,19 +462,19 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 11,
         fontWeight: '600',
-        color: '#7A9490',
+        color: '#1B2A6B',
         marginBottom: 5,
         marginTop: 14,
     },
 
     input: {
-        backgroundColor: '#F5FAF7',
-        borderWidth: 1,
-        borderColor: '#D4EBE2',
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#F5820A',
         borderRadius: 10,
         padding: 11,
         fontSize: 13,
-        color: '#1A2E25',
+        color: '#1b2a6b',
     },
 
     radioRow: {
@@ -483,7 +494,7 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 10,
         borderWidth: 2,
-        borderColor: '#0C7A54',
+        borderColor: '#1B2A6B',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -491,13 +502,13 @@ const styles = StyleSheet.create({
     radioInner: {
         width: 10,
         height: 10,
-        borderRadius: 5,
-        backgroundColor: '#0C7A54',
+        borderRadius: 15,
+        backgroundColor: '#1B2A6B',
     },
 
     radioLabel: {
         fontSize: 13,
-        color: '#1A2E25',
+        color: '#1B2A6B',
         fontWeight: '500',
         marginLeft: 8,
     },

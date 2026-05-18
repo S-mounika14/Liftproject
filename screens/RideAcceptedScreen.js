@@ -10,8 +10,20 @@ import {
     Image,
 } from 'react-native';
 
-import MapView, { Marker } from 'react-native-maps';
+// import MapView, { Marker } from 'react-native-maps';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ImageBackground } from 'react-native';
+
+function DummyMap({ style }) {
+  return (
+    <ImageBackground
+      source={require('../assets/map2.jpg')}
+      style={[style, { flex: 1, width: '100%', height: '100%' }]}
+      resizeMode="cover"
+    >
+    </ImageBackground>
+  );
+}
 
 export default function RideAcceptedScreen({ route, navigation }) {
 
@@ -98,7 +110,9 @@ export default function RideAcceptedScreen({ route, navigation }) {
 
         <View style={styles.container}>
 
-            <MapView
+            <DummyMap style={styles.map} />
+
+            {/* <MapView
                 style={styles.map}
                 initialRegion={{
                     latitude: seekerLocation.latitude,
@@ -153,7 +167,7 @@ export default function RideAcceptedScreen({ route, navigation }) {
 
                 ))}
 
-            </MapView>
+            </MapView> */}
 
             <View style={styles.statusPill}>
 
@@ -231,7 +245,7 @@ export default function RideAcceptedScreen({ route, navigation }) {
                         <View
                             style={[
                                 styles.locationDot,
-                                { backgroundColor: '#0B8F6A' },
+                                { backgroundColor: '#1270b8' },
                             ]}
                         />
 
@@ -392,7 +406,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 55,
         right: 18,
-        backgroundColor: '#0B8F6A',
+            backgroundColor: '#2a3f8f',
+
         paddingHorizontal: 14,
         paddingVertical: 10,
         borderRadius: 20,
@@ -444,7 +459,8 @@ const styles = StyleSheet.create({
     },
 
     etaText: {
-        color: '#0B8F6A',
+            color: '#2a3f8f',
+
         fontWeight: '700',
         fontSize: 12,
         marginBottom: 4,
@@ -459,7 +475,8 @@ const styles = StyleSheet.create({
     progressFill: {
         width: '60%',
         height: 3,
-        backgroundColor: '#0B8F6A',
+            backgroundColor: '#2a3f8f',
+
         borderRadius: 4,
     },
 
@@ -476,7 +493,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#0B8F6A',
+        backgroundColor: '#2a3f8f',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 8,
@@ -515,7 +532,8 @@ const styles = StyleSheet.create({
     },
 
     callButton: {
-        backgroundColor: '#EAF8F2',
+            backgroundColor: '#EEF4FF',
+
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 8,
@@ -523,7 +541,8 @@ const styles = StyleSheet.create({
     },
 
     callText: {
-        color: '#0B8F6A',
+            color: '#2a3f8f',
+
         fontWeight: '700',
         fontSize: 12,
     },
@@ -567,14 +586,14 @@ const styles = StyleSheet.create({
     },
 
     distanceBadge: {
-        backgroundColor: '#EAF8F2',
+        backgroundColor: '#EEF4FF',
         paddingHorizontal: 7,
         paddingVertical: 3,
         borderRadius: 7,
     },
 
     distanceText: {
-        color: '#0B8F6A',
+        color: '#2a3f8f',
         fontSize: 10,
         fontWeight: '700',
     },
@@ -648,7 +667,7 @@ const styles = StyleSheet.create({
 
     startButton: {
         flex: 1,
-        backgroundColor: '#0B8F6A',
+        backgroundColor: '#2a3f8f',
         paddingVertical: 10,
         borderRadius: 50,
         alignItems: 'center',

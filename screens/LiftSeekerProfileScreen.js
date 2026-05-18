@@ -177,7 +177,8 @@ export default function LiftSeekerProfileScreen({ navigation }) {
             {/* TOP PROFILE SECTION */}
 
             <LinearGradient
-                colors={['#0C7A54', '#1270B8']}
+                colors={['#1B2A6B', '#2A3F8F', '#1B2A6B']}
+
                 style={styles.topBand}
             >
 
@@ -197,7 +198,7 @@ export default function LiftSeekerProfileScreen({ navigation }) {
                             <Ionicons
                                 name="person"
                                 size={45}
-                                color="#0C7A54"
+                                color="#dbe3e0"
                             />
 
                         </View>
@@ -226,7 +227,7 @@ export default function LiftSeekerProfileScreen({ navigation }) {
                     <Ionicons
                         name="card-outline"
                         size={20}
-                        color="#0C7A54"
+                        color="#2a3f8f"
                     />
 
                     <Text style={styles.label}>
@@ -248,7 +249,7 @@ export default function LiftSeekerProfileScreen({ navigation }) {
                     <Ionicons
                         name="location-outline"
                         size={20}
-                        color="#0C7A54"
+                        color="#2a3f8f"
                     />
 
                     <Text style={styles.label}>
@@ -273,7 +274,7 @@ export default function LiftSeekerProfileScreen({ navigation }) {
                     <Ionicons
                         name="wallet-outline"
                         size={20}
-                        color="#0C7A54"
+                        color="#1b2a6b"
                     />
 
                     <Text style={styles.label}>
@@ -294,11 +295,21 @@ export default function LiftSeekerProfileScreen({ navigation }) {
                 style={styles.logoutBtn}
                 onPress={handleLogout}
             >
+                <LinearGradient
+                    colors={['#1B2A6B', '#2A3F8F', '#1B2A6B']}
 
-                <Text style={styles.logoutText}>
-                    Logout
-                </Text>
-
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                        padding: 14,
+                        alignItems: 'center',
+                        borderRadius: 14,
+                    }}
+                >
+                    <Text style={styles.logoutText}>
+                        Logout
+                    </Text>
+                </LinearGradient>
             </TouchableOpacity>
 
             {/* DEACTIVATE ACCOUNT */}
@@ -375,14 +386,14 @@ const styles = StyleSheet.create({
     label: {
         flex: 1,
         fontSize: 14,
-        color: '#1A2E25',
+        color: '#1b2a6b',
         fontWeight: '500',
     },
 
     value: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#0C7A54',
+        color: '#1b2a6b',
     },
 
     menuArrow: {
@@ -396,17 +407,13 @@ const styles = StyleSheet.create({
     },
 
     logoutBtn: {
-        marginHorizontal: 16,
-        padding: 14,
-        backgroundColor: '#FFF0F0',
-        borderRadius: 12,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#FF4D4D',
-    },
+    marginHorizontal: 16,
+    padding: 14,
+    alignItems: 'center',
+},
 
     logoutText: {
-        color: '#FF4D4D',
+        color: '#fff',
         fontWeight: '700',
         fontSize: 14,
     },

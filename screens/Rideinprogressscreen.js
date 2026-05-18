@@ -10,8 +10,21 @@ import {
     ActivityIndicator,
 } from 'react-native';
 
-import MapView, { Marker, Polyline } from 'react-native-maps';
+// import MapView, { Marker, Polyline } from 'react-native-maps';
+import { ImageBackground } from 'react-native';
+
 import * as Location from 'expo-location';
+
+function DummyMap({ style }) {
+  return (
+    <ImageBackground
+      source={require('../assets/con2.jpg')}
+      style={[style, { flex: 1, width: '100%', height: '100%' }]}
+      resizeMode="cover"
+    >
+    </ImageBackground>
+  );
+}
 
 export default function RideInProgressScreen({ route, navigation }) {
 
@@ -97,50 +110,65 @@ export default function RideInProgressScreen({ route, navigation }) {
     return (
         <View style={styles.container}>
 
-            <MapView
-                ref={mapRef}
-                style={styles.map}
-                showsUserLocation={true}
-                followsUserLocation={true}
-                initialRegion={{
-                    latitude: myLocation.latitude,
-                    longitude: myLocation.longitude,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
-                }}
-            >
+            <DummyMap style={styles.map} />
 
-                {/* Contributor Vehicle */}
-                <Marker
-                    coordinate={myLocation}
-                    tracksViewChanges={!imageLoaded}
-                >
-                    <Image
-                        source={require('../assets/car-taxi.png')}
-                        style={styles.vehicleImage}
-                        onLoad={() => setImageLoaded(true)}
-                    />
-                </Marker>
+           {/* <MapView
+    ref={mapRef}
+    style={styles.map}
+    showsUserLocation={false}
+    followsUserLocation={false}
+    initialRegion={{
+        latitude: myLocation.latitude,
+        longitude: myLocation.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+    }}
+>
 
-                {/* Drop Location */}
-                <Marker
-                    coordinate={rideRequest.dropCoords}
-                    title="Drop"
-                    pinColor="red"
-                />
+    <Marker coordinate={myLocation} tracksViewChanges={false}>
+        <Image
+            source={
+                vehicleType === 'car' || vehicleType === 'both'
+                    ? require('../assets/car-taxi.png')
+                    : require('../assets/bike-ride.png')
+            }
+            style={styles.bikeImg}
+        />
+    </Marker>
 
-                {/* Route */}
-                <Polyline
-                    coordinates={[
-                        myLocation,
-                        rideRequest.dropCoords,
-                    ]}
-                    strokeColor="#e53935"
-                    strokeWidth={3}
-                    lineDashPattern={[8, 4]}
-                />
+    <Marker coordinate={rideRequest.dropCoords}>
+        <View style={styles.seekerPin}>
+            <Text style={styles.seekerEmoji}>🙋</Text>
+        </View>
+    </Marker>
 
-            </MapView>
+    <Marker
+        coordinate={{
+            latitude:
+                (rideRequest.seekerCoords.latitude +
+                    rideRequest.dropCoords.latitude) / 2,
+            longitude:
+                (rideRequest.seekerCoords.longitude +
+                    rideRequest.dropCoords.longitude) / 2,
+        }}
+        anchor={{ x: 0.5, y: 0.5 }}
+    >
+        <View style={styles.etaBubble}>
+            <Text style={styles.etaText}>{eta}</Text>
+        </View>
+    </Marker>
+
+    <Polyline
+        coordinates={[
+            rideRequest.seekerCoords,
+            rideRequest.dropCoords,
+        ]}
+        strokeColor="#4338ca"
+        strokeWidth={4}
+        lineDashPattern={[8, 4]}
+    />
+
+</MapView> */}
 
             {/* Bottom Card */}
             <View style={styles.card}>

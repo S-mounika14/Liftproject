@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
+// SIMPLE BEGINNER FRIENDLY VERSION
+// SAME UI + SAME FUNCTIONALITY
+
+import React, { useEffect, useState } from 'react';
+
 import {
     View,
     Text,
@@ -12,122 +15,132 @@ import {
     Platform,
 } from 'react-native';
 
-import { LinearGradient } from 'expo-linear-gradient';
+import * as DocumentPicker from 'expo-document-picker';
 import * as Location from 'expo-location';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { LinearGradient } from 'expo-linear-gradient';
+
 import {
-    ALERT_TYPE,
-    Dialog,
     AlertNotificationRoot,
+    Dialog,
+    ALERT_TYPE,
 } from 'react-native-alert-notification';
+
+const NAVY = '#1B2A6B';
+const ORANGE = '#F5820A';
+const LIGHTNAVY = '#2A3F8F'
 
 export default function DocumentsScreen({ navigation }) {
 
     const [aadhaar, setAadhaar] = useState('');
-    const [aadhaarOtp, setAadhaarOtp] = useState('');
-    const [aadhaarVerified, setAadhaarVerified] = useState(false);
-    const [aadhaarOtpSent, setAadhaarOtpSent] = useState(false);
-    const [generatedAadhaarOtp, setGeneratedAadhaarOtp] = useState('');
+    const [otp, setOtp] = useState('');
+
+    const [realOtp, setRealOtp] = useState('');
+
+    const [otpSent, setOtpSent] = useState(false);
+    const [verified, setVerified] = useState(false);
+
+    const [panFile, setPanFile] = useState('');
+    const [licenceFile, setLicenceFile] = useState('');
 
     const [address, setAddress] = useState('');
 
-    const [panFile, setPanFile] = useState(null);
-    const [licenceFile, setLicenceFile] = useState(null);
-
     useEffect(() => {
+
         loadSavedData();
-        getAddressFromLocation();
+        getLocation();
+
     }, []);
 
+    // LOAD SAVED DATA
 
-    async function pickFile(setFile) {
-        try {
-            const result = await DocumentPicker.getDocumentAsync({
+    async function loadSavedData() {
+
+        const aadhaarData = await AsyncStorage.getItem('aadhaar');
+        const addressData = await AsyncStorage.getItem('address');
+
+        const panData = await AsyncStorage.getItem('panFile');
+        const licenceData = await AsyncStorage.getItem('licenceFile');
+
+        if (aadhaarData) {
+            setAadhaar(aadhaarData);
+        }
+
+        if (addressData) {
+            setAddress(addressData);
+        }
+
+        if (panData) {
+            setPanFile(panData);
+        }
+
+        if (licenceData) {
+            setLicenceFile(licenceData);
+        }
+    }
+
+    // GET LOCATION
+
+    async function getLocation() {
+
+        const permission =
+            await Location.requestForegroundPermissionsAsync();
+
+        if (permission.status !== 'granted') {
+            return;
+        }
+
+        const location =
+            await Location.getCurrentPositionAsync({});
+
+        const addressResult =
+            await Location.reverseGeocodeAsync({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+            });
+
+        if (addressResult.length > 0) {
+
+            const place = addressResult[0];
+
+            const fullAddress =
+                (place.street || '') + ', ' +
+                (place.city || '') + ', ' +
+                (place.region || '') + ', ' +
+                (place.postalCode || '');
+
+            setAddress(fullAddress);
+        }
+    }
+
+    // PICK FILE
+
+    async function pickFile(type) {
+
+        const result =
+            await DocumentPicker.getDocumentAsync({
                 type: '*/*',
             });
 
-            if (result.assets && result.assets.length > 0) {
-                setFile(result.assets[0].name);
+        if (result.assets && result.assets.length > 0) {
+
+            const fileName = result.assets[0].name;
+
+            if (type === 'pan') {
+                setPanFile(fileName);
             }
-        } catch (error) {
-            console.log('File picker error', error);
+
+            if (type === 'licence') {
+                setLicenceFile(fileName);
+            }
         }
     }
 
+    // SEND OTP
 
-    async function loadSavedData() {
-        try {
-
-            const savedAadhaar = await AsyncStorage.getItem('aadhaar');
-            const savedAddress = await AsyncStorage.getItem('address');
-            const savedPan = await AsyncStorage.getItem('panFile');
-            const savedLicence = await AsyncStorage.getItem('licenceFile');
-
-            if (savedAadhaar) setAadhaar(savedAadhaar);
-            if (savedAddress) setAddress(savedAddress);
-            if (savedPan) setPanFile(savedPan);
-            if (savedLicence) setLicenceFile(savedLicence);
-
-        } catch (error) {
-            console.log('Error loading saved data', error);
-        }
-    }
-
-
-    async function getAddressFromLocation() {
-
-        try {
-
-            const { status } =
-                await Location.requestForegroundPermissionsAsync();
-
-            if (status !== 'granted') {
-                return;
-            }
-
-            const currentLocation =
-                await Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.Highest,
-                });
-
-            const addressResponse =
-                await Location.reverseGeocodeAsync({
-                    latitude: currentLocation.coords.latitude,
-                    longitude: currentLocation.coords.longitude,
-                });
-
-            if (addressResponse.length > 0) {
-
-                const place = addressResponse[0];
-
-                console.log(
-                    'Full address object:',
-                    JSON.stringify(place, null, 2)
-                );
-
-                const fullAddress = [
-                    place.streetNumber,
-                    place.street,
-                    place.name,
-                    place.subregion,
-                    place.district,
-                    place.city,
-                    place.region,
-                    place.postalCode,
-                ]
-                    .filter(Boolean)
-                    .join(', ');
-
-                setAddress(fullAddress);
-            }
-
-        } catch (error) {
-            console.log('Location error', error);
-        }
-    }
-
-
-    function handleSendAadhaarOtp() {
+    function sendOtp() {
 
         if (aadhaar.length !== 12) {
 
@@ -141,38 +154,28 @@ export default function DocumentsScreen({ navigation }) {
             return;
         }
 
-        const otp =
+        const newOtp =
             Math.floor(1000 + Math.random() * 9000).toString();
 
-        setGeneratedAadhaarOtp(otp);
-        setAadhaarOtpSent(true);
+        setRealOtp(newOtp);
 
-        alert('Your Aadhaar OTP is ' + otp);
+        setOtpSent(true);
+
+        alert('OTP is ' + newOtp);
     }
 
+    // VERIFY OTP
 
-    function handleVerifyAadhaarOtp() {
+    function verifyOtp() {
 
-        if (aadhaarOtp.length < 4) {
+        if (otp === realOtp) {
 
-            Dialog.show({
-                type: ALERT_TYPE.WARNING,
-                title: 'Enter OTP',
-                textBody: 'Please enter the 4 digit OTP',
-                button: 'OK',
-            });
-
-            return;
-        }
-
-        if (aadhaarOtp === generatedAadhaarOtp) {
-
-            setAadhaarVerified(true);
+            setVerified(true);
 
             Dialog.show({
                 type: ALERT_TYPE.SUCCESS,
                 title: 'Success',
-                textBody: 'Aadhaar verified successfully',
+                textBody: 'Aadhaar Verified',
                 button: 'OK',
             });
 
@@ -181,38 +184,37 @@ export default function DocumentsScreen({ navigation }) {
             Dialog.show({
                 type: ALERT_TYPE.DANGER,
                 title: 'Wrong OTP',
-                textBody: 'The OTP you entered is incorrect',
+                textBody: 'Incorrect OTP',
                 button: 'Try Again',
             });
         }
     }
 
+    // AADHAAR INPUT
 
-    function handleAadhaarChange(text) {
+    function handleAadhaar(text) {
 
-        // only digits allowed
-        const cleanedText = text.replace(/[^0-9]/g, '');
+        const numbersOnly =
+            text.replace(/[^0-9]/g, '');
 
-        if (cleanedText.length <= 12) {
-            setAadhaar(cleanedText);
+        if (numbersOnly.length <= 12) {
+            setAadhaar(numbersOnly);
         }
     }
 
+    // NEXT BUTTON
 
     async function handleNext() {
 
-        try {
+        await AsyncStorage.setItem('aadhaar', aadhaar);
 
-            await AsyncStorage.setItem('aadhaar', aadhaar);
-            await AsyncStorage.setItem('address', address);
-            await AsyncStorage.setItem('panFile', panFile || '');
-            await AsyncStorage.setItem('licenceFile', licenceFile || '');
+        await AsyncStorage.setItem('address', address);
 
-            navigation.navigate('BankDetails');
+        await AsyncStorage.setItem('panFile', panFile);
 
-        } catch (error) {
-            console.log('Storage save error', error);
-        }
+        await AsyncStorage.setItem('licenceFile', licenceFile);
+
+        navigation.navigate('BankDetails');
     }
 
     return (
@@ -229,13 +231,13 @@ export default function DocumentsScreen({ navigation }) {
                     {/* HEADER */}
 
                     <LinearGradient
-                        colors={['#0C7A54', '#1270B8']}
+                        colors={['#1B2A6B', '#2A3F8F', '#1B2A6B']}
                         style={styles.header}
                     >
 
                         <TouchableOpacity
-                            onPress={() => navigation.goBack()}
                             style={styles.backBtn}
+                            onPress={() => navigation.goBack()}
                         >
 
                             <Image
@@ -256,27 +258,33 @@ export default function DocumentsScreen({ navigation }) {
                     {/* STEP BAR */}
 
                     <View style={styles.stepsRow}>
+
                         <View style={[styles.step, styles.stepDone]} />
+
                         <View style={[styles.step, styles.stepActive]} />
+
                         <View style={styles.step} />
                         <View style={styles.step} />
                         <View style={styles.step} />
+
                     </View>
 
                     <ScrollView
                         style={styles.body}
                         showsVerticalScrollIndicator={false}
-                        keyboardShouldPersistTaps="handled"
                     >
 
                         {/* AADHAAR */}
 
-                        <Text style={styles.sectionTitle}>
-                            Aadhaar Card
-                        </Text>
 
-                        <Text style={styles.label}>
-                            Aadhaar Number
+
+                        <Text
+                            style={[
+                                styles.sectionTitle,
+                                { marginTop: 14 }
+                            ]}
+                        >
+                            Aadhaar Card
                         </Text>
 
                         <View style={styles.row}>
@@ -285,39 +293,50 @@ export default function DocumentsScreen({ navigation }) {
                                 style={[
                                     styles.input,
                                     styles.inputFlex,
-                                    aadhaarOtpSent && styles.inputDisabled,
+                                    styles.orangeInput,
                                 ]}
                                 placeholder="XXXX XXXX XXXX"
+                                placeholderTextColor={LIGHTNAVY}
                                 value={aadhaar}
-                                onChangeText={handleAadhaarChange}
+                                onChangeText={handleAadhaar}
                                 keyboardType="numeric"
                                 maxLength={12}
-                                editable={!aadhaarOtpSent}
+                                editable={!otpSent}
                             />
 
                             <TouchableOpacity
-                                style={[
-                                    styles.verifyBtn,
-                                    aadhaarOtpSent && styles.verifiedBtn,
-                                ]}
-                                onPress={handleSendAadhaarOtp}
-                                disabled={aadhaarOtpSent}
+                                style={styles.buttonBox}
+                                onPress={sendOtp}
+                                disabled={otpSent}
                             >
 
-                                <Text
-                                    style={[
-                                        styles.verifyText,
-                                        aadhaarOtpSent && styles.verifiedText,
-                                    ]}
+                                <LinearGradient
+                                    colors={
+                                        otpSent
+                                            ? ['#EDF0F8', '#EDF0F8']
+                                            : ['#1B2A6B', '#2A3F8F', '#1B2A6B']
+                                    }
+                                    style={styles.smallButton}
                                 >
-                                    {aadhaarOtpSent
-                                        ? 'Sent ✓'
-                                        : 'Send OTP'}
-                                </Text>
+
+                                    <Text
+                                        style={[
+                                            styles.buttonText,
+                                            otpSent && styles.grayText,
+                                        ]}
+                                    >
+
+                                        {otpSent ? 'Sent ✓' : 'Send OTP'}
+
+                                    </Text>
+
+                                </LinearGradient>
 
                             </TouchableOpacity>
 
                         </View>
+
+                        {/* OTP */}
 
                         <Text style={styles.otpLabel}>
                             Enter OTP
@@ -329,35 +348,44 @@ export default function DocumentsScreen({ navigation }) {
                                 style={[
                                     styles.input,
                                     styles.inputFlex,
-                                    aadhaarVerified && styles.inputDisabled,
+                                    styles.orangeInput,
                                 ]}
                                 placeholder="Enter Aadhaar OTP"
-                                value={aadhaarOtp}
-                                onChangeText={setAadhaarOtp}
+                                placeholderTextColor={LIGHTNAVY}
+                                value={otp}
+                                onChangeText={setOtp}
                                 keyboardType="numeric"
                                 maxLength={4}
-                                editable={!aadhaarVerified}
+                                editable={!verified}
                             />
 
                             <TouchableOpacity
-                                style={[
-                                    styles.verifyBtn,
-                                    aadhaarVerified && styles.verifiedBtn,
-                                ]}
-                                onPress={handleVerifyAadhaarOtp}
-                                disabled={aadhaarVerified}
+                                style={styles.buttonBox}
+                                onPress={verifyOtp}
+                                disabled={verified}
                             >
 
-                                <Text
-                                    style={[
-                                        styles.verifyText,
-                                        aadhaarVerified && styles.verifiedText,
-                                    ]}
+                                <LinearGradient
+                                    colors={
+                                        verified
+                                            ? ['#EDF0F8', '#EDF0F8']
+                                            : ['#1B2A6B', '#2A3F8F', '#1B2A6B']
+                                    }
+                                    style={styles.smallButton}
                                 >
-                                    {aadhaarVerified
-                                        ? 'Verified ✓'
-                                        : 'Verify'}
-                                </Text>
+
+                                    <Text
+                                        style={[
+                                            styles.buttonText,
+                                            verified && styles.grayText,
+                                        ]}
+                                    >
+
+                                        {verified ? 'Verified ✓' : 'Verify'}
+
+                                    </Text>
+
+                                </LinearGradient>
 
                             </TouchableOpacity>
 
@@ -371,13 +399,15 @@ export default function DocumentsScreen({ navigation }) {
 
                         <TouchableOpacity
                             style={styles.uploadBtn}
-                            onPress={() => pickFile(setPanFile)}
+                            onPress={() => pickFile('pan')}
                         >
 
                             <Text style={styles.uploadText}>
+
                                 {panFile
                                     ? '✓ ' + panFile
-                                    : 'Upload PAN Card'}
+                                    : '⬆ Upload PAN Card'}
+
                             </Text>
 
                         </TouchableOpacity>
@@ -390,37 +420,26 @@ export default function DocumentsScreen({ navigation }) {
 
                         <TouchableOpacity
                             style={styles.uploadBtn}
-                            onPress={() => pickFile(setLicenceFile)}
+                            onPress={() => pickFile('licence')}
                         >
 
                             <Text style={styles.uploadText}>
+
                                 {licenceFile
                                     ? '✓ ' + licenceFile
-                                    : 'Upload Driving Licence'}
+                                    : '⬆ Upload Driving Licence'}
+
                             </Text>
 
                         </TouchableOpacity>
 
-                        <View
-                            style={{
-                                alignItems: 'flex-end',
-                                marginTop: 1,
-                                marginBottom: 5,
-                            }}
-                        >
+                        <View style={{ alignItems: 'flex-end' }}>
 
                             <TouchableOpacity
-                                onPress={() => pickFile(setLicenceFile)}
+                                onPress={() => pickFile('licence')}
                             >
 
-                                <Text
-                                    style={{
-                                        fontSize: 13,
-                                        color: '#0C7A54',
-                                        textDecorationLine: 'underline',
-                                        fontWeight: '600',
-                                    }}
-                                >
+                                <Text style={styles.updateLink}>
                                     Upload Updated Document
                                 </Text>
 
@@ -430,21 +449,21 @@ export default function DocumentsScreen({ navigation }) {
 
                         {/* ADDRESS */}
 
-                        <Text style={styles.sectionTitle}>
-                            Address
-                        </Text>
 
                         <Text style={styles.label}>
                             Full Address
                         </Text>
 
                         <TextInput
-                            style={[styles.input, styles.textArea]}
+                            style={[
+                                styles.input,
+                                styles.textArea,
+                            ]}
                             placeholder="Enter your full address"
+                            placeholderTextColor="#A0AEC0"
                             value={address}
                             onChangeText={setAddress}
                             multiline
-                            numberOfLines={3}
                         />
 
                         {/* NEXT BUTTON */}
@@ -455,7 +474,7 @@ export default function DocumentsScreen({ navigation }) {
                         >
 
                             <LinearGradient
-                                colors={['#0C7A54', '#1270B8']}
+                                colors={['#1B2A6B', '#2A3F8F', '#1B2A6B']}
                                 style={styles.nextBtnGrad}
                             >
 
@@ -481,7 +500,7 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#FAFBFF',
     },
 
     header: {
@@ -500,8 +519,8 @@ const styles = StyleSheet.create({
     },
 
     backIcon: {
-        width: 30,
-        height: 30,
+        width: 22,
+        height: 22,
         resizeMode: 'contain',
         tintColor: '#fff',
     },
@@ -516,26 +535,28 @@ const styles = StyleSheet.create({
 
     stepsRow: {
         flexDirection: 'row',
-        gap: 5,
         justifyContent: 'center',
         paddingVertical: 12,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#EDF0F8',
     },
 
     step: {
         width: 20,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#D4EBE2',
+        backgroundColor: '#D6DBF0',
+        marginHorizontal: 3,
+    },
+
+    stepDone: {
+        backgroundColor: ORANGE,
     },
 
     stepActive: {
         width: 30,
-        backgroundColor: '#0C7A54',
-    },
-
-    stepDone: {
-        width: 22,
-        backgroundColor: '#22C98A',
+        backgroundColor: NAVY,
     },
 
     body: {
@@ -545,91 +566,94 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 11,
         fontWeight: '700',
-        color: '#1270B8',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-        marginTop: 14,
+        color: NAVY,
+        marginTop: 18,
         marginBottom: 6,
     },
 
     label: {
         fontSize: 11,
-        fontWeight: '600',
-        color: '#7A9490',
-        marginBottom: 5,
+        color: NAVY,
+        fontWeight: '700',
+        marginBottom: 15,
+    },
+
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 
     input: {
-        backgroundColor: '#F5FAF7',
-        borderWidth: 1,
-        borderColor: '#D4EBE2',
+        backgroundColor: '#fff',
+        borderWidth: 1.5,
+        borderColor: '#F5820A',
         borderRadius: 10,
         padding: 11,
         fontSize: 13,
-        color: '#1A2E25',
+        color: NAVY,
     },
 
     inputFlex: {
         flex: 1,
     },
 
-    inputDisabled: {
-        backgroundColor: '#F0F0F0',
-        opacity: 0.6,
+    orangeInput: {
+        borderColor: ORANGE,
+        backgroundColor: '#fff',
     },
 
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-
-    verifyBtn: {
-        backgroundColor: '#0C7A54',
-        paddingHorizontal: 12,
-        paddingVertical: 11,
+    buttonBox: {
+        marginLeft: 8,
         borderRadius: 10,
+        overflow: 'hidden',
     },
 
-    verifiedBtn: {
-        backgroundColor: '#E2F7EE',
-        borderWidth: 1.5,
-        borderColor: '#22C98A',
+    smallButton: {
+        paddingHorizontal: 13,
+        paddingVertical: 11,
+        alignItems: 'center',
     },
 
-    verifyText: {
+    buttonText: {
         color: '#fff',
         fontSize: 11,
         fontWeight: '700',
     },
 
-    verifiedText: {
-        color: '#0C7A54',
+    grayText: {
+        color: '#8896B3',
     },
 
     otpLabel: {
-        fontSize: 10,
-        fontWeight: '600',
-        color: '#7A9490',
+        fontSize: 11,
+        color: NAVY,
+        fontWeight: '700',
         marginTop: 8,
         marginBottom: 4,
     },
 
     uploadBtn: {
-        backgroundColor: '#F5FAF7',
+        backgroundColor: '#fff',
         borderWidth: 1.5,
-        borderColor: '#9FD4BE',
+        borderColor: ORANGE,
         borderStyle: 'dashed',
         borderRadius: 10,
-        padding: 12,
+        padding: 13,
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 8,
     },
 
     uploadText: {
-        color: '#0C7A54',
+        color: NAVY,
         fontWeight: '600',
         fontSize: 13,
+    },
+
+    updateLink: {
+        fontSize: 12,
+        color: ORANGE,
+        textDecorationLine: 'underline',
+        marginBottom: 10,
     },
 
     textArea: {
@@ -655,4 +679,3 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
 });
-

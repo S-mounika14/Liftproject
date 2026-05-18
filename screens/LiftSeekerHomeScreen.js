@@ -12,11 +12,22 @@ import {
 import * as Location from 'expo-location';
 import NetInfo from '@react-native-community/netinfo';
 
-import MapView, { Marker } from 'react-native-maps';
-import MapViewDirections from 'react-native-maps-directions';
+// import MapView, { Marker } from 'react-native-maps';
+// import MapViewDirections from 'react-native-maps-directions';
+import { ImageBackground } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+function DummyMap({ style }) {
+  return (
+    <ImageBackground
+      source={require('../assets/map4.jpg')}
+      style={[style, { flex: 1, width: '100%', height: '100%' }]}
+      resizeMode="cover"
+    >
+    </ImageBackground>
+  );
+}
 export default function LiftSeekerHomeScreen({ navigation }) {
 
     const [fromAddress, setFromAddress] = useState('');
@@ -141,7 +152,6 @@ export default function LiftSeekerHomeScreen({ navigation }) {
 
             setErrorMsg('Please turn on device location');
 
-            console.log(error);
         }
     }
 
@@ -169,7 +179,6 @@ export default function LiftSeekerHomeScreen({ navigation }) {
 
         } catch (error) {
 
-            console.log('Destination search error', error);
         }
     }
 
@@ -232,8 +241,10 @@ export default function LiftSeekerHomeScreen({ navigation }) {
                 </Animated.View>
             )}
 
+            <DummyMap style={styles.map} />
 
-            <MapView
+
+            {/* <MapView
                 style={styles.map}
                 initialRegion={{
                     latitude:
@@ -294,7 +305,7 @@ export default function LiftSeekerHomeScreen({ navigation }) {
                     />
                 )}
 
-            </MapView>
+            </MapView> */}
 
 
             <View style={styles.topCard}>
@@ -394,7 +405,7 @@ export default function LiftSeekerHomeScreen({ navigation }) {
                     >
 
                         <LinearGradient
-                            colors={['#0B8F6A', '#1E88E5']}
+                            colors={['#2a3f8f', '#1270B8']}
                             style={styles.searchBtn}
                         >
 
@@ -499,7 +510,7 @@ const styles = StyleSheet.create({
     },
 
     doneBtn: {
-        backgroundColor: '#0C7A54',
+     backgroundColor: '#2a3f8f',
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 5,

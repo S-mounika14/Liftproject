@@ -22,6 +22,11 @@ export default function AccountScreen({ navigation }) {
   const [phone, setPhone] = useState('');
   const [image, setImage] = useState(null);
 
+
+  const NAVY = '#1B2A6B';
+  const LIGHT_NAVY = '#2A3F8F';
+  const ORANGE = '#F5820A';
+
   useEffect(() => {
     loadUserData();
   }, []);
@@ -93,7 +98,7 @@ export default function AccountScreen({ navigation }) {
     <ScrollView style={styles.container}>
 
       <LinearGradient
-        colors={['#0C7A54', '#1270B8']}
+        colors={[NAVY, LIGHT_NAVY, NAVY]}
         style={styles.topBand}
       >
 
@@ -112,7 +117,7 @@ export default function AccountScreen({ navigation }) {
               <Ionicons
                 name="person"
                 size={45}
-                color="#0C7A54"
+                color="#a0a3b1"
               />
             </View>
 
@@ -140,7 +145,7 @@ export default function AccountScreen({ navigation }) {
           <Ionicons
             name="document-text-outline"
             size={22}
-            color="#0C7A54"
+            color="#1b2a6b"
             style={styles.menuIcon}
           />
 
@@ -164,7 +169,7 @@ export default function AccountScreen({ navigation }) {
           <Ionicons
             name="car-outline"
             size={22}
-            color="#0C7A54"
+            color="#1b2a6b"
             style={styles.menuIcon}
           />
 
@@ -188,7 +193,7 @@ export default function AccountScreen({ navigation }) {
           <Ionicons
             name="card-outline"
             size={22}
-            color="#0C7A54"
+            color="#1b2a6b"
             style={styles.menuIcon}
           />
 
@@ -212,7 +217,7 @@ export default function AccountScreen({ navigation }) {
           <Ionicons
             name="warning-outline"
             size={22}
-            color="#0C7A54"
+            color="#1b2a6b"
             style={styles.menuIcon}
           />
 
@@ -240,7 +245,7 @@ export default function AccountScreen({ navigation }) {
           <Ionicons
             name="mail-outline"
             size={22}
-            color="#0C7A54"
+            color="#1b2a6b"
             style={styles.menuIcon}
           />
 
@@ -256,13 +261,22 @@ export default function AccountScreen({ navigation }) {
         style={styles.logoutBtn}
         onPress={handleLogout}
       >
+        <LinearGradient
+          colors={['#1B2A6B', '#2A3F8F', '#1B2A6B']}
 
-        <Text style={styles.logoutText}>
-          Logout
-        </Text>
-
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{
+            padding: 14,
+            alignItems: 'center',
+            borderRadius: 14,
+          }}
+        >
+          <Text style={styles.logoutText}>
+            Logout
+          </Text>
+        </LinearGradient>
       </TouchableOpacity>
-
     </ScrollView>
   );
 }
@@ -302,7 +316,7 @@ const styles = StyleSheet.create({
 
   phone: {
     fontSize: 13,
-    color: '#D4EBE2',
+    color: '#D6DBF0',
     marginTop: 2,
   },
 
@@ -311,6 +325,8 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 14,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#EDF0F8',
     elevation: 2,
   },
 
@@ -327,33 +343,29 @@ const styles = StyleSheet.create({
   menuText: {
     flex: 1,
     fontSize: 14,
-    color: '#1A2E25',
+    color: '#1b2a6b',
     fontWeight: '500',
   },
 
   menuArrow: {
     fontSize: 20,
-    color: '#7A9490',
+    color: '#8896B3',
   },
 
   menuDivider: {
     height: 1,
-    backgroundColor: '#F0F0F0',
+    backgroundColor: '#EDF0F8',
     marginLeft: 46,
   },
 
   logoutBtn: {
     marginHorizontal: 16,
     padding: 14,
-    backgroundColor: '#FFF0F0',
-    borderRadius: 12,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FF4D4D',
   },
 
   logoutText: {
-    color: '#FF4D4D',
+    color: '#fff',
     fontWeight: '700',
     fontSize: 14,
   },

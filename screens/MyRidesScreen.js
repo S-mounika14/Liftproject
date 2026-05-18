@@ -62,7 +62,8 @@ export default function MyRidesScreen() {
 
         {/* TOP HEADER */}
         <LinearGradient
-          colors={['#0C7A54', '#1270B8']}
+          colors={['#2a3f8f', '#1270B8']}
+
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.topBand}

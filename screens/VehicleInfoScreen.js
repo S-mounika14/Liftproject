@@ -31,6 +31,10 @@ export default function VehicleInfoScreen({ navigation }) {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  const NAVY = '#1B2A6B';
+  const LIGHT_NAVY = '#2A3F8F';
+  const ORANGE = '#F5820A';
+
   // Load saved data
   useEffect(() => {
 
@@ -160,7 +164,7 @@ export default function VehicleInfoScreen({ navigation }) {
 
         {/* Header */}
         <LinearGradient
-          colors={['#0C7A54', '#1270B8']}
+          colors={[NAVY, LIGHT_NAVY, NAVY]}
           style={styles.header}
         >
 
@@ -314,6 +318,7 @@ export default function VehicleInfoScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Enter policy number (e.g. ICICI-1234567890-01)"
+            placeholderTextColor="#2a3f8f"
             value={policyNo}
             onChangeText={(text) => {
 
@@ -346,7 +351,7 @@ export default function VehicleInfoScreen({ navigation }) {
 
             <Text
               style={{
-                color: expiryDate ? '#1A2E25' : '#aaa',
+                color: expiryDate ? '#1A2E25' : '#2A3F8F',
                 fontSize: 13,
               }}
             >
@@ -372,6 +377,8 @@ export default function VehicleInfoScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter insurance company name"
             value={insuranceCompany}
+              placeholderTextColor="#2a3f8f"
+
             onChangeText={setInsuranceCompany}
           />
 
@@ -382,7 +389,7 @@ export default function VehicleInfoScreen({ navigation }) {
           >
 
             <LinearGradient
-              colors={['#0C7A54', '#1270B8']}
+              colors={[NAVY, LIGHT_NAVY, NAVY]}
               style={styles.nextBtnGrad}
             >
 
@@ -451,17 +458,17 @@ const styles = StyleSheet.create({
     width: 20,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#D4EBE2',
+    backgroundColor: '#D6DBF0',
   },
 
   stepDone: {
     width: 22,
-    backgroundColor: '#22C98A',
+    backgroundColor: '#F5820A',
   },
 
   stepActive: {
     width: 30,
-    backgroundColor: '#0C7A54',
+    backgroundColor: '#1B2A6B',
   },
 
   body: {
@@ -471,7 +478,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#1270B8',
+    color: '#1B2A6B',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginTop: 14,
@@ -480,20 +487,20 @@ const styles = StyleSheet.create({
 
   label: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#7A9490',
+    fontWeight: '700',
+    color: '#1B2A6B',
     marginBottom: 5,
     marginTop: 10,
   },
 
   input: {
-    backgroundColor: '#F5FAF7',
-    borderWidth: 1,
-    borderColor: '#D4EBE2',
+    backgroundColor: '#fff',
+    borderWidth: 1.5,
+    borderColor: '#F5820A',
     borderRadius: 10,
     padding: 11,
     fontSize: 13,
-    color: '#1A2E25',
+    color: '#1B2A6B',
   },
 
   checkRow: {
@@ -506,25 +513,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#F5FAF7',
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#D4EBE2',
+    borderColor: '#F5820A',
     borderRadius: 10,
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
+  
 
-  checkBoxSelected: {
-    backgroundColor: '#EBF9F3',
-    borderColor: '#0C7A54',
-  },
+ checkBoxSelected: {
+  backgroundColor: '#9bafd9',
+  borderColor: '#1B2A6B',
+},
 
   radioOuter: {
     width: 20,
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#0C7A54',
+    borderColor: '#1B2A6B',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -533,24 +541,24 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#0C7A54',
+    backgroundColor: '#1b2a6b',
   },
 
   checkLabel: {
     fontSize: 13,
-    color: '#7A9490',
+    color: '#8896B3',
     fontWeight: '500',
   },
 
   checkLabelSelected: {
-    color: '#0C7A54',
+    color: '#1B2A6B',
     fontWeight: '700',
   },
 
   uploadBtn: {
-    backgroundColor: '#F5FAF7',
+    backgroundColor: '#fff',
     borderWidth: 1.5,
-    borderColor: '#9FD4BE',
+    borderColor: '#F5820A',
     borderStyle: 'dashed',
     borderRadius: 10,
     padding: 14,
@@ -558,8 +566,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
+ 
+
   uploadText: {
-    color: '#0C7A54',
+    color: '#1b2a6b',
     fontWeight: '600',
     fontSize: 13,
   },
@@ -572,14 +582,14 @@ const styles = StyleSheet.create({
 
   updateDocText: {
     fontSize: 13,
-    color: '#0C7A54',
+    color: '#F5820A',
     textDecorationLine: 'underline',
     fontWeight: '600',
   },
 
   divider: {
     borderTopWidth: 1,
-    borderColor: '#EAF2EE',
+    borderColor: '#EDF0F8',
     marginVertical: 14,
   },
 

@@ -1,8 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+// import MapView, { Marker, Polyline } from 'react-native-maps';
+import { ImageBackground } from 'react-native';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+function DummyMap({ style }) {
+  return (
+    <ImageBackground
+      source={require('../assets/con1.jpg')}
+      style={[style, { flex: 1, width: '100%', height: '100%' }]}
+      resizeMode="cover"
+    >
+    </ImageBackground>
+  );
+}
 
 export default function NavigateToSeekerScreen({ route, navigation }) {
 
@@ -57,61 +70,65 @@ export default function NavigateToSeekerScreen({ route, navigation }) {
     return (
         <View style={{ flex: 1 }}>
 
-            <MapView
-                ref={mapRef}
-                style={styles.map}
-                showsUserLocation={false}
-                followsUserLocation={false}
-                initialRegion={{
-                    latitude: myLocation.latitude,
-                    longitude: myLocation.longitude,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
-                }}
-            >
+            <DummyMap style={styles.map} />
 
+            {/* <MapView
+    ref={mapRef}
+    style={styles.map}
+    showsUserLocation={false}
+    followsUserLocation={false}
+    initialRegion={{
+        latitude: myLocation.latitude,
+        longitude: myLocation.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+    }}
+>
 
-                {/* contributor — bike or car */}
-                <Marker coordinate={myLocation} tracksViewChanges={false}>
-                    <Image
-                        source={
-                            vehicleType === 'car' || vehicleType === 'both'
-                                ? require('../assets/car-taxi.png')
-                                : require('../assets/bike-ride.png')
-                        }
-                        style={styles.bikeImg}
-                    />
-                </Marker>
+    <Marker coordinate={myLocation} tracksViewChanges={false}>
+        <Image
+            source={
+                vehicleType === 'car' || vehicleType === 'both'
+                    ? require('../assets/car-taxi.png')
+                    : require('../assets/bike-ride.png')
+            }
+            style={styles.bikeImg}
+        />
+    </Marker>
 
-                {/* seeker */}
-                <Marker coordinate={rideRequest.dropCoords}>
-                    <View style={styles.seekerPin}>
-                        <Text style={styles.seekerEmoji}>🙋</Text>
-                    </View>
-                </Marker>
+    <Marker coordinate={rideRequest.dropCoords}>
+        <View style={styles.seekerPin}>
+            <Text style={styles.seekerEmoji}>🙋</Text>
+        </View>
+    </Marker>
 
-                {/* ETA label in middle of route */}
-                <Marker
-                    coordinate={{
-                        latitude: (rideRequest.seekerCoords.latitude + rideRequest.dropCoords.latitude) / 2,
-                        longitude: (rideRequest.seekerCoords.longitude + rideRequest.dropCoords.longitude) / 2,
-                    }}
-                    anchor={{ x: 0.5, y: 0.5 }}
-                >
-                    <View style={styles.etaBubble}>
-                        <Text style={styles.etaText}>{eta}</Text>
-                    </View>
-                </Marker>
+    <Marker
+        coordinate={{
+            latitude:
+                (rideRequest.seekerCoords.latitude +
+                    rideRequest.dropCoords.latitude) / 2,
+            longitude:
+                (rideRequest.seekerCoords.longitude +
+                    rideRequest.dropCoords.longitude) / 2,
+        }}
+        anchor={{ x: 0.5, y: 0.5 }}
+    >
+        <View style={styles.etaBubble}>
+            <Text style={styles.etaText}>{eta}</Text>
+        </View>
+    </Marker>
 
-                {/* dashed route line */}
-                <Polyline
-                    coordinates={[rideRequest.seekerCoords, rideRequest.dropCoords]}
-                    strokeColor="#4338ca"
-                    strokeWidth={4}
-                    lineDashPattern={[8, 4]}
-                />
+    <Polyline
+        coordinates={[
+            rideRequest.seekerCoords,
+            rideRequest.dropCoords,
+        ]}
+        strokeColor="#4338ca"
+        strokeWidth={4}
+        lineDashPattern={[8, 4]}
+    />
 
-            </MapView>
+</MapView> */}
 
             {/* bottom card */}
             <View style={styles.card}>
@@ -141,14 +158,21 @@ export default function NavigateToSeekerScreen({ route, navigation }) {
 
                 <TouchableOpacity
                     style={styles.btn}
-                    onPress={() => navigation.navigate('QRVerify', { rideRequest })}
+                    onPress={() =>
+                        navigation.navigate('QRVerify', {
+                            rideRequest: rideRequest,
+                        })
+                    }
                 >
-                    <Text style={styles.btnText}>Arrived — Verify Seeker</Text>
+                    <Text style={styles.btnText}>
+                        Arrived — Verify Seeker
+                    </Text>
                 </TouchableOpacity>
 
             </View>
 
         </View >
+
     );
 }
 

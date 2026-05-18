@@ -643,6 +643,7 @@ export default function AuthScreen({ navigation, route }) {
         await AsyncStorage.setItem('password', signupPassword);
         await AsyncStorage.setItem('role', role);
         await AsyncStorage.setItem('vehicleType', 'bike');
+        await AsyncStorage.setItem('isRegistered', 'true');
 
         // go to next screen
         if (role === 'user') {
@@ -662,13 +663,9 @@ export default function AuthScreen({ navigation, route }) {
                 <View style={styles.container}>
 
                     {/* top green blue banner with logo */}
-                    <LinearGradient colors={['#0C7A54', '#1270B8']} style={styles.topBand}>
-                        <Image
-                            source={require('../assets/LiftImage.png')}
-                            style={styles.logo}
-                            resizeMode="contain"
-                        />
-                    </LinearGradient>
+                    <View style={styles.topBand}>
+                        <Image source={require('../assets/newlogo1.jpg')} style={styles.logo} resizeMode="contain" />
+                    </View>
 
                     <View style={{ flex: 1, backgroundColor: '#fff' }}>
 
@@ -706,8 +703,10 @@ export default function AuthScreen({ navigation, route }) {
                             >
                                 <View style={styles.phoneRow}>
                                     <TextInput
-                                        style={styles.input}
+                                        style={[styles.input, styles.inputFlex]}
                                         placeholder="Enter Email or Phone Number"
+                                        placeholderTextColor="#7A8CA5"
+
                                         value={phone}
                                         onChangeText={handleLoginPhoneChange}
                                         keyboardType="email-address"
@@ -730,7 +729,7 @@ export default function AuthScreen({ navigation, route }) {
                                     onPress={() => setShowOtp(!showOtp)}
                                     style={{ alignSelf: 'flex-end', marginTop: 6 }}
                                 >
-                                    <Text style={{ color: '#0C7A54', fontSize: 12, fontWeight: '600' }}>
+                                    <Text style={{ color: '#2a3f8f', fontSize: 12, fontWeight: '600' }}>
                                         {showOtp ? 'Login with Password' : 'Login with OTP'}
                                     </Text>
                                 </TouchableOpacity>
@@ -742,6 +741,8 @@ export default function AuthScreen({ navigation, route }) {
                                             <TextInput
                                                 style={[styles.input, { paddingRight: 40 }]}
                                                 placeholder="Enter password"
+                                                placeholderTextColor="#7A8CA5"
+
                                                 value={password}
                                                 onChangeText={setPassword}
                                                 secureTextEntry={!showLoginPassword}
@@ -760,7 +761,7 @@ export default function AuthScreen({ navigation, route }) {
 
                                         <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
                                             <LinearGradient
-                                                colors={['#0C7A54', '#1270B8']}
+                                                colors={['#2a3f8f', '#1270B8']}
                                                 style={styles.loginBtnGrad}
                                                 start={{ x: 0, y: 0 }}
                                                 end={{ x: 1, y: 0 }}
@@ -769,8 +770,6 @@ export default function AuthScreen({ navigation, route }) {
                                             </LinearGradient>
                                         </TouchableOpacity>
 
-                                        <View style={styles.divider} />
-                                        <View style={styles.divider} />
 
                                         {/* <TouchableOpacity
                                             onPress={() => promptAsync({ useProxy: true })}
@@ -790,6 +789,8 @@ export default function AuthScreen({ navigation, route }) {
                                             <TextInput
                                                 style={[styles.input, styles.inputFlex]}
                                                 placeholder="Enter OTP"
+                                                placeholderTextColor="#7A8CA5"
+
                                                 value={otp}
                                                 onChangeText={(text) => {
                                                     setOtp(text);
@@ -801,7 +802,8 @@ export default function AuthScreen({ navigation, route }) {
                                             <TouchableOpacity
                                                 style={[
                                                     styles.verifyBtn,
-                                                    (phone.length < 10 || otpSent) && styles.verifyBtnDisabled
+                                                    (!isValidPhone(phone) && !isValidEmail(phone)) && styles.verifyBtnDisabled,
+                                                    otpSent && styles.sentBtn
                                                 ]}
                                                 onPress={handleSendOtp}
                                                 disabled={phone.length < 10 || otpSent}
@@ -815,7 +817,7 @@ export default function AuthScreen({ navigation, route }) {
                                         <TouchableOpacity
                                             style={[
                                                 styles.verifyBtn,
-                                                { marginTop: 10, alignItems: 'center' },
+                                                { marginTop: 10, alignItems: 'center', backgroundColor: '#2a3f8f' },
                                                 otp.length < 4 && styles.verifyBtnDisabled
                                             ]}
                                             onPress={handleVerifyOtp}
@@ -843,6 +845,8 @@ export default function AuthScreen({ navigation, route }) {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Enter FirstName"
+                                    placeholderTextColor="#7A8CA5"
+
                                     value={name}
                                     onChangeText={setName}
                                 />
@@ -850,6 +854,8 @@ export default function AuthScreen({ navigation, route }) {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Enter LastName"
+                                    placeholderTextColor="#7A8CA5"
+
                                     value={lastName}
                                     onChangeText={setLastName}
                                 />
@@ -864,6 +870,8 @@ export default function AuthScreen({ navigation, route }) {
                                         ]}
                                         placeholder="Enter Email"
                                         value={email}
+                                        placeholderTextColor="#7A8CA5"
+
                                         onChangeText={handleEmailChange}
                                         keyboardType="email-address"
                                         autoCapitalize="none"
@@ -872,7 +880,9 @@ export default function AuthScreen({ navigation, route }) {
                                     <TouchableOpacity
                                         style={[
                                             styles.verifyBtn,
-                                            (emailOtpSent || !isValidEmail(email)) && styles.verifyBtnDisabled
+                                            { backgroundColor: '#2a3f8f' },
+                                            !isValidEmail(email) && styles.verifyBtnDisabled,
+                                            emailOtpSent && styles.sentBtn
                                         ]}
                                         onPress={handleSendEmailOtp}
                                         disabled={emailOtpSent || !isValidEmail(email)}
@@ -897,6 +907,8 @@ export default function AuthScreen({ navigation, route }) {
                                                 ]}
                                                 placeholder="Enter Email OTP"
                                                 value={emailOtp}
+                                                placeholderTextColor="#7A8CA5"
+
                                                 onChangeText={(text) => {
                                                     setEmailOtp(text);
                                                     if (text.length === 4) Keyboard.dismiss();
@@ -934,6 +946,8 @@ export default function AuthScreen({ navigation, route }) {
                                         ]}
                                         placeholder="Enter PhoneNumber"
                                         value={signupPhone}
+                                        placeholderTextColor="#7A8CA5"
+
                                         onChangeText={handleSignupPhoneChange}
                                         keyboardType="number-pad"
                                         maxLength={10}
@@ -967,6 +981,8 @@ export default function AuthScreen({ navigation, route }) {
                                                     phoneVerified && styles.inputDisabled
                                                 ]}
                                                 placeholder="Enter phone OTP"
+                                                placeholderTextColor="#7A8CA5"
+
                                                 value={phoneOtp}
                                                 onChangeText={(text) => {
                                                     setPhoneOtp(text);
@@ -1001,6 +1017,8 @@ export default function AuthScreen({ navigation, route }) {
                                         style={[styles.input, { paddingRight: 40 }]}
                                         placeholder="Create Password"
                                         value={signupPassword}
+                                        placeholderTextColor="#7A8CA5"
+
                                         onChangeText={setSignupPassword}
                                         secureTextEntry={!showPassword}
                                     />
@@ -1022,6 +1040,8 @@ export default function AuthScreen({ navigation, route }) {
                                         style={[styles.input, { paddingRight: 40 }]}
                                         placeholder="Confirm Password"
                                         value={confirmPassword}
+                                        placeholderTextColor="#7A8CA5"
+
                                         onChangeText={setConfirmPassword}
                                         secureTextEntry={!showConfirmPassword}
                                     />
@@ -1039,7 +1059,7 @@ export default function AuthScreen({ navigation, route }) {
 
                                 <TouchableOpacity style={styles.nextBtn} onPress={handleNext}>
                                     <LinearGradient
-                                        colors={['#0C7A54', '#1270B8']}
+                                        colors={['#1b2a6b', '#1270B8']}
                                         style={styles.nextBtnGrad}
                                         start={{ x: 0, y: 0 }}
                                         end={{ x: 1, y: 0 }}
@@ -1089,7 +1109,7 @@ const styles = StyleSheet.create({
     },
 
     topBand: {
-        height: 250,
+        height: 230,
         justifyContent: 'center',
         alignItems: 'center',
         borderBottomLeftRadius: 30,
@@ -1099,7 +1119,7 @@ const styles = StyleSheet.create({
 
     logo: {
         width: 150,
-        height: 100,
+        height: 150,
     },
 
     tabRow: {
@@ -1128,7 +1148,7 @@ const styles = StyleSheet.create({
     },
 
     tabActive: {
-        backgroundColor: '#0C7A54',
+        backgroundColor: '#2a3f8f',
     },
 
     tabActiveText: {
@@ -1150,8 +1170,7 @@ const styles = StyleSheet.create({
     },
 
     input: {
-        flex: 1,
-        backgroundColor: '#F5FAF7',
+        backgroundColor: '#fff',
         borderWidth: 1,
         borderColor: '#D4EBE2',
         borderRadius: 50,
@@ -1205,20 +1224,20 @@ const styles = StyleSheet.create({
     },
 
     verifyBtn: {
-        backgroundColor: '#0C7A54',
+        backgroundColor: '#2a3f8f',
         paddingHorizontal: 12,
         paddingVertical: 11,
         borderRadius: 50,
     },
 
     verifyBtnDisabled: {
-        backgroundColor: '#B0CFC4',
+        backgroundColor: '#aaabc8',
     },
 
     verifiedBtn: {
         backgroundColor: '#E2F7EE',
         borderWidth: 1.5,
-        borderColor: '#22C98A',
+        borderColor: '#B0CFC4',
     },
 
     verifyText: {
@@ -1228,7 +1247,7 @@ const styles = StyleSheet.create({
     },
 
     verifiedText: {
-        color: '#0C7A54',
+        color: '#2a3f8f',
     },
 
     errorText: {

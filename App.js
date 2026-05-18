@@ -21,10 +21,15 @@ import ReferScreen from './screens/ReferScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import LiftSeekerProfileScreen from './screens/LiftSeekerProfileScreen';
 import WalletScreen from './screens/WalletScreen';
-import * as Battery from 'expo-battery';
+//import * as Battery from 'expo-battery';
 import { useState, useEffect } from 'react';
 import { Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import AddressScreen from './screens/AddressScreen';
+import OnboardingScreen from './screens/OnboardingScreen';
+import { OneSignal } from 'react-native-onesignal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 
 import SearchingScreen from './screens/SearchingScreen';
@@ -61,7 +66,7 @@ function BottomTabs({ route }) {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#0C7A54',
+        tabBarActiveTintColor: '#1b2a6b',
         tabBarInactiveTintColor: 'gray',
       })}
     >
@@ -94,7 +99,7 @@ function LiftSeekerTabs() {
           else if (route.name === 'Profile') iconName = 'person';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#0C7A54',
+        tabBarActiveTintColor: '#1b2a6b',
         tabBarInactiveTintColor: 'gray',
       })}
     >
@@ -131,10 +136,13 @@ function HomeStackNavigator() {
   );
 }
 
+
+
+
 function ContributorHomeStackNavigator() {
   return (
     <ContributorHomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <ContributorHomeStack.Screen name="Map" component={MapScreen} />
+     <ContributorHomeStack.Screen name="Map" component={MapScreen} />
       <ContributorHomeStack.Screen name="NavigateToSeeker" component={NavigateToSeekerScreen} />
       <ContributorHomeStack.Screen name="QRVerify" component={QRVerifyScreen} />
       <ContributorHomeStack.Screen name="RideInProgress" component={RideInProgressScreen} />
@@ -144,27 +152,46 @@ function ContributorHomeStackNavigator() {
 
 export default function App() {
 
-  const [lowBattery, setLowBattery] = useState(false);
+
+
 
   useEffect(() => {
-    // check once on start
-    Battery.getBatteryLevelAsync().then(level => {
-      console.log('Battery level:', level);
-      if (level < 0.64) setLowBattery(true);
+    OneSignal.initialize('e1c1ac2a-dae7-491e-8535-8dfba35b5a59');
+    console.log('OneSignal initialized');
+
+    //OneSignal.Notifications.requestPermission(true);
+
+    // listen for subscription change
+    OneSignal.User.pushSubscription.addEventListener('change', (subscription) => {
+      console.log('Subscription changed:', subscription);
+      console.log('Push ID:', subscription.current?.id);
+      if (subscription.current?.id) {
+        AsyncStorage.setItem('contributorPlayerId', subscription.current.id);
+      }
     });
-
-    // listen for changes
-    const subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
-
-      if (batteryLevel < 0.64) setLowBattery(true);
-      else setLowBattery(false);
-    });
-
-    return () => subscription.remove(); // cleanup
   }, []);
+
+  // const [lowBattery, setLowBattery] = useState(false);
+
+  // useEffect(() => {
+  //   // check once on start
+  //   Battery.getBatteryLevelAsync().then(level => {
+  //     console.log('Battery level:', level);
+  //     if (level < 0.64) setLowBattery(true);
+  //   });
+
+  //   // listen for changes
+  //   const subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
+
+  //     if (batteryLevel < 0.64) setLowBattery(true);
+  //     else setLowBattery(false);
+  //   });
+
+  //   return () => subscription.remove(); // cleanup
+  // }, []);
   return (
     <NavigationContainer>
-      <Modal visible={lowBattery} transparent animationType="fade">
+      {/* <Modal visible={lowBattery} transparent animationType="fade">
         <View style={styles.overlay}>
           <View style={styles.box}>
             <Text style={styles.title}>🔋 Low Battery</Text>
@@ -174,7 +201,7 @@ export default function App() {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
 
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
@@ -182,7 +209,7 @@ export default function App() {
         <Stack.Screen
           name="CreateAccount"
           component={CreateAccountScreen}
-          options={{ animation: 'slide_from_left' }} />
+           options={{ animation: 'slide_from_right' }} />
 
 
         <Stack.Screen name="Documents" component={DocumentsScreen} />
@@ -194,6 +221,11 @@ export default function App() {
         <Stack.Screen name="Permissions" component={PermissionsScreen} />
         <Stack.Screen name="Wallet" component={WalletScreen} />
         <Stack.Screen name="LiftSeekerMain" component={LiftSeekerTabs} />
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
 
         <Stack.Screen
           name="Profile"
@@ -211,6 +243,7 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
 
 const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },

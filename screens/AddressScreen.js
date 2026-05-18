@@ -226,7 +226,8 @@ export default function AddressScreen() {
         <View style={styles.container}>
 
             <LinearGradient
-                colors={['#0C7A54', '#1270B8']}
+                colors={['#1B2A6B', '#2A3F8F', '#1B2A6B']}
+
                 style={styles.header}
             >
                 <Text style={styles.headerTitle}>
@@ -259,7 +260,7 @@ export default function AddressScreen() {
                             size={18}
                             color={
                                 activeTab === tab.key
-                                    ? '#0C7A54'
+                                    ? '#1b2a6b'
                                     : '#aaa'
                             }
                         />
@@ -294,7 +295,7 @@ export default function AddressScreen() {
                             <Ionicons
                                 name={iconName}
                                 size={22}
-                                color="#0C7A54"
+                                color="#1b2a6b"
                             />
 
                         </View>
@@ -321,7 +322,7 @@ export default function AddressScreen() {
                                 <Ionicons
                                     name="pencil-outline"
                                     size={16}
-                                    color="#0C7A54"
+                                    color="#2a3f8f"
                                 />
 
                             </TouchableOpacity>
@@ -354,11 +355,11 @@ export default function AddressScreen() {
                                     activeTab === 'home'
                                         ? 'home-outline'
                                         : activeTab === 'work'
-                                        ? 'briefcase-outline'
-                                        : 'location-outline'
+                                            ? 'briefcase-outline'
+                                            : 'location-outline'
                                 }
                                 size={36}
-                                color="#B0CFC4"
+                                color="#1b2a6b"
                             />
 
                         </View>
@@ -436,7 +437,7 @@ export default function AddressScreen() {
                             >
 
                                 <LinearGradient
-                                    colors={['#0C7A54', '#1270B8']}
+                                    colors={['#1b2a6b', '#1270B8']}
                                     style={styles.saveBtnGrad}
                                 >
 
@@ -462,7 +463,7 @@ export default function AddressScreen() {
                     >
 
                         <LinearGradient
-                            colors={['#0C7A54', '#1270B8']}
+                            colors={['#1b2a6b', '#1270B8']}
                             style={styles.addBtnGrad}
                         >
 
@@ -511,17 +512,19 @@ const styles = StyleSheet.create({
     },
 
     header: {
-        paddingTop: 55,
-        paddingBottom: 20,
+        paddingTop: 60,
+        paddingBottom: 24,
         paddingHorizontal: 20,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
+        borderBottomLeftRadius: 34,
+        borderBottomRightRadius: 34,
+        overflow: 'hidden',
     },
 
     headerTitle: {
         color: '#fff',
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: '700',
+        letterSpacing: 0.5,
     },
 
     tabBar: {
@@ -544,7 +547,7 @@ const styles = StyleSheet.create({
     },
 
     tabActive: {
-        backgroundColor: '#EBF9F3',
+        backgroundColor: '#EAF2FF',
     },
 
     tabText: {
@@ -555,7 +558,7 @@ const styles = StyleSheet.create({
     },
 
     tabTextActive: {
-        color: '#0C7A54',
+        color: '#1270B8',
         fontWeight: '700',
     },
 
@@ -573,14 +576,14 @@ const styles = StyleSheet.create({
         elevation: 2,
         marginBottom: 12,
         borderLeftWidth: 4,
-        borderLeftColor: '#0C7A54',
+        borderLeftColor: '#1270B8',
     },
 
     addressIconBox: {
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: '#EBF9F3',
+        backgroundColor: '#EEF4FF',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -592,7 +595,7 @@ const styles = StyleSheet.create({
 
     addressLabel: {
         fontSize: 11,
-        color: '#0C7A54',
+        color: '#1270B8',
         fontWeight: '700',
         marginBottom: 3,
     },
@@ -678,7 +681,7 @@ const styles = StyleSheet.create({
     },
 
     input: {
-        backgroundColor: '#F5FAF7',
+        backgroundColor: '#F8FAFF',
         borderWidth: 1,
         borderColor: '#D4EBE2',
         borderRadius: 10,

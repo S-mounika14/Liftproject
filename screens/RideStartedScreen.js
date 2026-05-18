@@ -11,7 +11,20 @@ import {
     Share,
 } from 'react-native';
 
-import MapView, { Marker, Polyline } from 'react-native-maps';
+// import MapView, { Marker, Polyline } from 'react-native-maps';
+
+import { ImageBackground } from 'react-native';
+
+function DummyMap({ style }) {
+  return (
+    <ImageBackground
+      source={require('../assets/map3.jpg')}
+      style={[style, { flex: 1, width: '100%', height: '100%' }]}
+      resizeMode="cover"
+    >
+    </ImageBackground>
+  );
+}
 
 export default function RideStartedScreen({ route, navigation }) {
 
@@ -119,37 +132,65 @@ export default function RideStartedScreen({ route, navigation }) {
     return (
         <View style={styles.container}>
 
-            <MapView
-                style={styles.map}
-                initialRegion={{
-                    latitude: origin.latitude,
-                    longitude: origin.longitude,
-                    latitudeDelta: 0.03,
-                    longitudeDelta: 0.03,
-                }}
-            >
+            <DummyMap style={styles.map} />
+{/* 
+           {/* <MapView
+    ref={mapRef}
+    style={styles.map}
+    showsUserLocation={false}
+    followsUserLocation={false}
+    initialRegion={{
+        latitude: myLocation.latitude,
+        longitude: myLocation.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+    }}
+>
 
-                {/* Pickup */}
-                <Marker
-                    coordinate={origin}
-                    pinColor="green"
-                />
+    <Marker coordinate={myLocation} tracksViewChanges={false}>
+        <Image
+            source={
+                vehicleType === 'car' || vehicleType === 'both'
+                    ? require('../assets/car-taxi.png')
+                    : require('../assets/bike-ride.png')
+            }
+            style={styles.bikeImg}
+        />
+    </Marker>
 
-                {/* Destination */}
-                <Marker
-                    coordinate={destination}
-                    pinColor="red"
-                />
+    <Marker coordinate={rideRequest.dropCoords}>
+        <View style={styles.seekerPin}>
+            <Text style={styles.seekerEmoji}>🙋</Text>
+        </View>
+    </Marker>
 
-                {/* Route */}
-                <Polyline
-                    coordinates={[origin, destination]}
-                    strokeWidth={5}
-                    strokeColor="#0B8F6A"
-                    lineDashPattern={[1]}
-                />
+    <Marker
+        coordinate={{
+            latitude:
+                (rideRequest.seekerCoords.latitude +
+                    rideRequest.dropCoords.latitude) / 2,
+            longitude:
+                (rideRequest.seekerCoords.longitude +
+                    rideRequest.dropCoords.longitude) / 2,
+        }}
+        anchor={{ x: 0.5, y: 0.5 }}
+    >
+        <View style={styles.etaBubble}>
+            <Text style={styles.etaText}>{eta}</Text>
+        </View>
+    </Marker>
 
-            </MapView>
+    <Polyline
+        coordinates={[
+            rideRequest.seekerCoords,
+            rideRequest.dropCoords,
+        ]}
+        strokeColor="#4338ca"
+        strokeWidth={4}
+        lineDashPattern={[8, 4]}
+    />
+
+</MapView> */}
 
             {/* Arrived Screen */}
             {arrived && (
@@ -499,7 +540,7 @@ const styles = StyleSheet.create({
     },
 
     homeButton: {
-        backgroundColor: '#0B8F6A',
+        backgroundColor: '#2a3f8f',
         paddingHorizontal: 50,
         paddingVertical: 14,
         borderRadius: 50,
