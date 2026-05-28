@@ -9,7 +9,6 @@ import {
 
 // import MapView, { Marker, Polyline } from 'react-native-maps';
 import { LinearGradient } from 'expo-linear-gradient';
-import { OneSignal } from 'react-native-onesignal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImageBackground } from 'react-native';
 

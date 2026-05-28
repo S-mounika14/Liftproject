@@ -163,10 +163,7 @@ export default function VehicleInfoScreen({ navigation }) {
       <View style={styles.container}>
 
         {/* Header */}
-        <LinearGradient
-          colors={[NAVY, LIGHT_NAVY, NAVY]}
-          style={styles.header}
-        >
+        <View style={styles.header}>
 
           <TouchableOpacity
             style={styles.backBtn}
@@ -186,18 +183,9 @@ export default function VehicleInfoScreen({ navigation }) {
 
           <View style={{ width: 30 }} />
 
-        </LinearGradient>
-
-        {/* Steps */}
-        <View style={styles.stepsRow}>
-
-          <View style={[styles.step, styles.stepDone]} />
-          <View style={[styles.step, styles.stepDone]} />
-          <View style={[styles.step, styles.stepDone]} />
-          <View style={[styles.step, styles.stepDone]} />
-          <View style={[styles.step, styles.stepActive]} />
-
         </View>
+
+       
 
         <ScrollView
           style={styles.body}
@@ -327,7 +315,7 @@ export default function VehicleInfoScreen({ navigation }) {
               }
 
             }}
-            keyboardType="default"
+            inputMode="text"
             maxLength={25}
           />
 
@@ -377,7 +365,7 @@ export default function VehicleInfoScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter insurance company name"
             value={insuranceCompany}
-              placeholderTextColor="#2a3f8f"
+            placeholderTextColor="#2a3f8f"
 
             onChangeText={setInsuranceCompany}
           />
@@ -420,11 +408,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingTop: 50,
     paddingBottom: 14,
     paddingHorizontal: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#D6DBF0',
   },
-
   backBtn: {
     width: 30,
     height: 30,
@@ -436,40 +427,18 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     resizeMode: 'contain',
-    tintColor: '#fff',
+    tintColor: '#1B2A6B',
   },
 
   headerTitle: {
     flex: 1,
-    color: '#fff',
+    color: '#1B2A6B',
     fontSize: 15,
     fontWeight: '700',
     textAlign: 'center',
   },
 
-  stepsRow: {
-    flexDirection: 'row',
-    gap: 5,
-    justifyContent: 'center',
-    paddingVertical: 12,
-  },
-
-  step: {
-    width: 20,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#D6DBF0',
-  },
-
-  stepDone: {
-    width: 22,
-    backgroundColor: '#F5820A',
-  },
-
-  stepActive: {
-    width: 30,
-    backgroundColor: '#1B2A6B',
-  },
+ 
 
   body: {
     paddingHorizontal: 20,
@@ -496,7 +465,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#fff',
     borderWidth: 1.5,
-    borderColor: '#F5820A',
+    borderColor: '#D6DBF0',
     borderRadius: 10,
     padding: 11,
     fontSize: 13,
@@ -515,17 +484,16 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#F5820A',
-    borderRadius: 10,
+    borderColor: '#D6DBF0', borderRadius: 10,
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  
 
- checkBoxSelected: {
-  backgroundColor: '#9bafd9',
-  borderColor: '#1B2A6B',
-},
+
+  checkBoxSelected: {
+    backgroundColor: '#EEF2FF',
+    borderColor: '#1B2A6B',
+  },
 
   radioOuter: {
     width: 20,
@@ -558,7 +526,7 @@ const styles = StyleSheet.create({
   uploadBtn: {
     backgroundColor: '#fff',
     borderWidth: 1.5,
-    borderColor: '#F5820A',
+    borderColor: '#D6DBF0',
     borderStyle: 'dashed',
     borderRadius: 10,
     padding: 14,
@@ -566,7 +534,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
- 
+
 
   uploadText: {
     color: '#1b2a6b',
@@ -581,11 +549,12 @@ const styles = StyleSheet.create({
   },
 
   updateDocText: {
-    fontSize: 13,
-    color: '#F5820A',
+  fontSize: 13,
+  color: '#2A3F8F',
     textDecorationLine: 'underline',
-    fontWeight: '600',
-  },
+
+  fontWeight: '600',
+},
 
   divider: {
     borderTopWidth: 1,

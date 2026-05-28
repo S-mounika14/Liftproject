@@ -26,7 +26,6 @@ import { useState, useEffect } from 'react';
 import { Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import AddressScreen from './screens/AddressScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
-import { OneSignal } from 'react-native-onesignal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -155,21 +154,8 @@ export default function App() {
 
 
 
-  useEffect(() => {
-    OneSignal.initialize('e1c1ac2a-dae7-491e-8535-8dfba35b5a59');
-    console.log('OneSignal initialized');
+ 
 
-    //OneSignal.Notifications.requestPermission(true);
-
-    // listen for subscription change
-    OneSignal.User.pushSubscription.addEventListener('change', (subscription) => {
-      console.log('Subscription changed:', subscription);
-      console.log('Push ID:', subscription.current?.id);
-      if (subscription.current?.id) {
-        AsyncStorage.setItem('contributorPlayerId', subscription.current.id);
-      }
-    });
-  }, []);
 
   // const [lowBattery, setLowBattery] = useState(false);
 

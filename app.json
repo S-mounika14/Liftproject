@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -23,9 +23,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "newArchEnabled": true,
+      "newArchEnabled": false,
       "edgeToEdgeEnabled": false,
-      
+
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
@@ -39,18 +39,27 @@
       "@react-native-community/datetimepicker",
       "expo-web-browser",
       "expo-font",
+
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Lift to access your camera.",
+           "microphonePermission": false
+        }
+      ],
+       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Lift to access your photos"
+        }
+      ],
       [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Lift to use your location."
         }
-      ],
-      [
-        "onesignal-expo-plugin",
-        {
-          "mode": "production"
-        }
       ]
+     
     ],
     "extra": {
       "eas": {

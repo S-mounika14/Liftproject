@@ -189,10 +189,7 @@ export default function EmergencyContactScreen({ navigation }) {
         <View style={styles.container}>
 
 
-            <LinearGradient
-                colors={[NAVY, LIGHT_NAVY, NAVY]}
-                style={styles.header}
-            >
+            <View style={styles.header}>
 
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
@@ -212,16 +209,10 @@ export default function EmergencyContactScreen({ navigation }) {
 
                 <View style={{ width: 30 }} />
 
-            </LinearGradient>
-
-
-            <View style={styles.stepsRow}>
-                <View style={[styles.step, styles.stepDone]} />
-                <View style={[styles.step, styles.stepDone]} />
-                <View style={[styles.step, styles.stepDone]} />
-                <View style={[styles.step, styles.stepActive]} />
-                <View style={styles.step} />
             </View>
+
+
+          
 
             <ScrollView
                 style={styles.body}
@@ -236,7 +227,7 @@ export default function EmergencyContactScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="Enter contact name"
-                      placeholderTextColor="#8896B3"
+                    placeholderTextColor="#8896B3"
                     value={contactName}
                     onChangeText={setContactName}
                 />
@@ -249,7 +240,7 @@ export default function EmergencyContactScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="e.g. Spouse, Parent, Friend"
-                      placeholderTextColor="#8896B3"
+                    placeholderTextColor="#8896B3"
                     value={relationship}
                     onChangeText={setRelationship}
                 />
@@ -262,10 +253,10 @@ export default function EmergencyContactScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="+91 XXXXX XXXXX"
-                      placeholderTextColor="#8896B3"
+                    placeholderTextColor="#8896B3"
                     value={phone}
                     onChangeText={handlePhoneChange}
-                    keyboardType="phone-pad"
+                    inputMode="tel"
                     maxLength={10}
                 />
 
@@ -277,10 +268,10 @@ export default function EmergencyContactScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="Enter email address"
-                      placeholderTextColor="#8896B3"
+                    placeholderTextColor="#8896B3"
                     value={email}
                     onChangeText={handleEmailChange}
-                    keyboardType="email-address"
+                    inputMode="email"
                     autoCapitalize="none"
                 />
 
@@ -325,9 +316,13 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingTop: 50,
         paddingBottom: 14,
         paddingHorizontal: 16,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#D6DBF0',
     },
 
     backBtn: {
@@ -341,41 +336,18 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         resizeMode: 'contain',
-        tintColor: '#fff',
+       tintColor: '#1B2A6B',
     },
 
     headerTitle: {
         flex: 1,
-        color: '#fff',
+        color: '#1b2a6b',
         fontSize: 15,
         fontWeight: '700',
         textAlign: 'center',
     },
 
-    stepsRow: {
-        flexDirection: 'row',
-        gap: 5,
-        justifyContent: 'center',
-        paddingVertical: 12,
-    },
-
-    step: {
-        width: 20,
-        height: 4,
-        borderRadius: 2,
-        backgroundColor: '#D6DBF0',
-    },
-
-    stepActive: {
-        width: 30,
-        backgroundColor: '#1b2a6b',
-    },
-
-    stepDone: {
-        width: 22,
-        backgroundColor: '#f5820a',
-    },
-
+   
     body: {
         paddingHorizontal: 20,
     },
@@ -391,7 +363,7 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: '#fff',
         borderWidth: 1.5,
-        borderColor: '#f5820a',
+        borderColor: '#D6DBF0',
         borderRadius: 10,
         padding: 11,
         fontSize: 13,
