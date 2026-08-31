@@ -21,6 +21,7 @@ export default function AccountScreen({ navigation }) {
   const [phone, setPhone] = useState("");
   const [image, setImage] = useState(null);
   const [showPhotoOptions, setShowPhotoOptions] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const NAVY = "#1B2A6B";
   const LIGHT_NAVY = "#2A3F8F";
@@ -62,32 +63,33 @@ export default function AccountScreen({ navigation }) {
   }
 
   async function openCamera() {
-  const { granted, canAskAgain } = await ImagePicker.requestCameraPermissionsAsync();
+    const { granted, canAskAgain } =
+      await ImagePicker.requestCameraPermissionsAsync();
 
-  if (!granted && !canAskAgain) {
-    Alert.alert(
-      "Camera Permission Required",
-      "Please allow camera access in settings.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ]
-    );
-    return;
+    if (!granted && !canAskAgain) {
+      Alert.alert(
+        "Camera Permission Required",
+        "Please allow camera access in settings.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Open Settings", onPress: () => Linking.openSettings() },
+        ],
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const selectedImage = result.assets[0].uri;
+      setImage(selectedImage);
+      await AsyncStorage.setItem("photo", selectedImage);
+    }
   }
-
-  const result = await ImagePicker.launchCameraAsync({
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 1,
-  });
-
-  if (!result.canceled) {
-    const selectedImage = result.assets[0].uri;
-    setImage(selectedImage);
-    await AsyncStorage.setItem("photo", selectedImage);
-  }
-}
 
   async function openGallery() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -131,7 +133,10 @@ export default function AccountScreen({ navigation }) {
           </TouchableOpacity>
 
           {/* EDIT ICON */}
-          <TouchableOpacity onPress={() => setShowPhotoOptions(true)} style={styles.editIcon}>
+          <TouchableOpacity
+            onPress={() => setShowPhotoOptions(true)}
+            style={styles.editIcon}
+          >
             <Ionicons name="pencil" size={14} color="#1b2a6b" />
           </TouchableOpacity>
         </View>
@@ -215,57 +220,97 @@ export default function AccountScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => Linking.openURL("tel:+919999999999")}
+          onPress={() => setShowSupport(!showSupport)}
         >
           <Ionicons
-            name="call-outline"
+            name="headset-outline"
             size={22}
             color="#1b2a6b"
             style={styles.menuIcon}
           />
-
-          <Text style={styles.menuText}>Call Support</Text>
-
-          <Text style={styles.menuArrow}>›</Text>
-        </TouchableOpacity>
-
-        <View style={styles.menuDivider} />
-
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => Linking.openURL("https://wa.me/919999999999")}
-        >
+          <Text style={styles.menuText}>Support</Text>
           <Ionicons
-            name="chatbubble-outline"
-            size={22}
-            color="#1b2a6b"
-            style={styles.menuIcon}
+            name={showSupport ? "chevron-down" : "chevron-down"}
+            size={15}
+            color="#8896B3"
           />
-
-          <Text style={styles.menuText}>Chat Support</Text>
-
-          <Text style={styles.menuArrow}>›</Text>
         </TouchableOpacity>
 
-        <View style={styles.menuDivider} />
+        {showSupport && (
+          <View
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: "#EDF0F8",
+              marginHorizontal: 12,
+              marginBottom: 8,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 12,
+                gap: 8,
+              }}
+              onPress={() => Linking.openURL("tel:+918885556666")}
+            >
+              <Ionicons name="call-outline" size={16} color="#1b2a6b" />
+              <Text
+                style={{ fontSize: 13, color: "#1b2a6b", fontWeight: "500" }}
+              >
+                Call
+              </Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() =>
-            Linking.openURL("mailto:2080tecnologiesprivatelimited@gmail.com")
-          }
-        >
-          <Ionicons
-            name="mail-outline"
-            size={22}
-            color="#1b2a6b"
-            style={styles.menuIcon}
-          />
+            <View style={{ height: 1, backgroundColor: "#EDF0F8" }} />
 
-          <Text style={styles.menuText}>Email Support</Text>
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 12,
+                gap: 8,
+              }}
+              onPress={() =>
+                Linking.openURL(
+                  "https://api.whatsapp.com/send?phone=918885556666",
+                )
+              }
+            >
+              <Ionicons name="chatbubble-outline" size={16} color="#1b2a6b" />
+              <Text
+                style={{ fontSize: 13, color: "#1b2a6b", fontWeight: "500" }}
+              >
+                Chat
+              </Text>
+            </TouchableOpacity>
 
-          <Text style={styles.menuArrow}>›</Text>
-        </TouchableOpacity>
+            <View style={{ height: 1, backgroundColor: "#EDF0F8" }} />
+
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 12,
+                gap: 8,
+              }}
+              onPress={() =>
+                Linking.openURL(
+                  "mailto:2080tecnologiesprivatelimited@gmail.com",
+                )
+              }
+            >
+              <Ionicons name="mail-outline" size={16} color="#1b2a6b" />
+              <Text
+                style={{ fontSize: 13, color: "#1b2a6b", fontWeight: "500" }}
+              >
+                Email
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
@@ -365,7 +410,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     margin: 16,
     borderRadius: 14,
-    overflow: "hidden",
+    overflow: "visible",
     borderWidth: 1,
     borderColor: "#EDF0F8",
     elevation: 2,
@@ -417,6 +462,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     padding: 14,
     alignItems: "center",
+    zIndex: 1,
   },
 
   logoutText: {
@@ -432,7 +478,6 @@ const styles = StyleSheet.create({
     padding: 75,
     paddingTop: 16,
     paddingBottom: 402,
-    
   },
 
   photoBox: {
@@ -449,6 +494,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#1b2a6b",
     fontWeight: "600",
-    marginLeft:28,
+    marginLeft: 28,
   },
 });

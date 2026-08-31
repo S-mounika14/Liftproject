@@ -24,6 +24,21 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 
+async function sendOtpViaEmailJS(toEmail, otp) {
+  const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      service_id: "service_e0pp52g",
+      template_id: "template_pnee6md",
+      user_id: "Fhf1NiVOPVtvQCpXR",
+      accessToken: "A4drlbwwzTwfzig-KIUNy",
+      template_params: { to_email: toEmail, otp: otp },
+    }),
+  });
+  if (!response.ok) throw new Error("Failed to send OTP");
+}
+
 export default function AuthScreen({ navigation, route }) {
   const role = route.params?.role;
   const [activeTab, setActiveTab] = useState("login");
@@ -70,6 +85,7 @@ export default function AuthScreen({ navigation, route }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [gender, setGender] = useState("");
   const [showGenderOptions, setShowGenderOptions] = useState(false);
+  const [generatedEmailOtp, setGeneratedEmailOtp] = useState("");
 
   // get google user info using access token
   async function fetchGoogleUser(token) {
@@ -123,8 +139,8 @@ export default function AuthScreen({ navigation, route }) {
 
   // check if email format is correct
   function isValidEmail(text) {
-    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/.test(text);
-  }
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|in|org)$/.test(text);
+}
 
   function isValidPassword(pass) {
     return /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{6,10}$/.test(pass);
@@ -154,43 +170,23 @@ export default function AuthScreen({ navigation, route }) {
 
       return;
     }
-    // if email then call backend api
+    // if email then (login tab emailJS)
     try {
-      const res = await fetch(`${API_BASE}/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: phone }),
+      const genOtp = Math.floor(1000 + Math.random() * 9000).toString();
+      await sendOtpViaEmailJS(phone, genOtp);
+      setGeneratedOtp(genOtp);
+      setOtpSent(true);
+      Dialog.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: "OTP Sent",
+        textBody: "OTP sent to " + phone,
+        button: "OK",
       });
-
-      const text = await res.text();
-      let data;
-
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        console.log("NON-JSON RESPONSE:", text);
-        throw new Error("Backend did not return JSON");
-      }
-
-      console.log("OTP RESPONSE:", res.status, data);
-
-      if (res.ok) {
-        setOtpSent(true);
-        Dialog.show({
-          type: ALERT_TYPE.SUCCESS,
-          title: "OTP Sent",
-          textBody: data.message || "OTP sent successfully",
-          button: "OK",
-        });
-      } else {
-        throw new Error(data.message || "OTP failed");
-      }
-    } catch (error) {
-      console.log("OTP ERROR:", error);
+    } catch (e) {
       Dialog.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
-        textBody: error.message || "Failed to send OTP",
+        textBody: "Failed to send OTP",
         button: "OK",
       });
     }
@@ -263,36 +259,20 @@ export default function AuthScreen({ navigation, route }) {
     }
 
     // email otp verification
-    try {
-      const res = await fetch(`${API_BASE}/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: phone, otp }),
-      });
-      const data = await res.json();
-      setLoginOtpVerifying(false);
+    setLoginOtpVerifying(false);
+    if (otp === generatedOtp) {
       await AsyncStorage.setItem("isLoggedIn", "true");
       await AsyncStorage.setItem("phone", phone);
-      if (data.success) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Main", params: { phone: phone } }],
-        });
-      } else {
-        Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: "Wrong OTP",
-          textBody: "Invalid OTP, try again",
-          button: "Try Again",
-        });
-      }
-    } catch (error) {
-      setLoginOtpVerifying(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Main", params: { phone: phone } }],
+      });
+    } else {
       Dialog.show({
         type: ALERT_TYPE.DANGER,
-        title: "Error",
-        textBody: "Failed to verify OTP",
-        button: "OK",
+        title: "Wrong OTP",
+        textBody: "Invalid OTP, try again",
+        button: "Try Again",
       });
     }
   }
@@ -372,47 +352,21 @@ export default function AuthScreen({ navigation, route }) {
   async function handleSendEmailOtp() {
     setLoading(true);
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-      const res = await fetch(`${API_BASE}/send-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-        body: JSON.stringify({ email }),
-        signal: controller.signal,
+      const otp = Math.floor(1000 + Math.random() * 9000).toString();
+      await sendOtpViaEmailJS(email, otp);
+      setGeneratedEmailOtp(otp);
+      setEmailOtpSent(true);
+      Dialog.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: "OTP Sent",
+        textBody: "OTP sent to " + email,
+        button: "OK",
       });
-
-      clearTimeout(timeoutId);
-
-      const text = await res.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        console.log("NON-JSON RESPONSE:", text);
-        throw new Error("Backend did not return JSON");
-      }
-
-      if (res.ok && data.success) {
-        setEmailOtpSent(true);
-        Dialog.show({
-          type: ALERT_TYPE.SUCCESS,
-          title: "OTP Sent",
-          textBody: data.message || "OTP sent to your email",
-          button: "OK",
-        });
-      } else {
-        throw new Error(data.message || "Failed to send OTP");
-      }
-    } catch (error) {
-      console.log("OTP SEND ERROR:", error);
+    } catch (e) {
       Dialog.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
-        textBody: error.message || "Failed to send OTP. Check your connection.",
+        textBody: "Failed to send OTP",
         button: "OK",
       });
     } finally {
@@ -421,49 +375,21 @@ export default function AuthScreen({ navigation, route }) {
   }
 
   // verify email otp on signup
-  async function handleVerifyEmailOtp() {
-    try {
-      const res = await fetch(`${API_BASE}/verify-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-        body: JSON.stringify({ email, otp: emailOtp }),
+  function handleVerifyEmailOtp() {
+    if (emailOtp === generatedEmailOtp) {
+      setEmailVerified(true);
+      Dialog.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: "Success",
+        textBody: "Email verified",
+        button: "OK",
       });
-
-      const text = await res.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        console.log("NON-JSON RESPONSE:", text);
-        throw new Error("Backend did not return JSON");
-      }
-
-      if (data.success) {
-        setEmailVerified(true);
-        Dialog.show({
-          type: ALERT_TYPE.SUCCESS,
-          title: "Success",
-          textBody: "Email verified",
-          button: "OK",
-        });
-      } else {
-        Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: "Wrong OTP",
-          textBody: data.message || "Invalid OTP",
-          button: "Try Again",
-        });
-      }
-    } catch (error) {
-      console.log("VERIFY OTP ERROR:", error);
+    } else {
       Dialog.show({
         type: ALERT_TYPE.DANGER,
-        title: "Error",
-        textBody: error.message || "Verification failed",
-        button: "OK",
+        title: "Wrong OTP",
+        textBody: "The OTP you entered is incorrect",
+        button: "Try Again",
       });
     }
   }
@@ -711,7 +637,16 @@ export default function AuthScreen({ navigation, route }) {
     await AsyncStorage.setItem("vehicleType", "bike");
     await AsyncStorage.setItem("isRegistered", "true");
     await AsyncStorage.setItem("gender", gender);
-    await AsyncStorage.setItem("dob", dob ? dob.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "");
+    await AsyncStorage.setItem(
+      "dob",
+      dob
+        ? dob.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "",
+    );
 
     // navigate based on role
     if (role === "user") {
@@ -1510,12 +1445,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-
-
-
-
-
-
-
-
-

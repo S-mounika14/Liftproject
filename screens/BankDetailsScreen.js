@@ -24,12 +24,10 @@ export default function BankDetailsScreen({ navigation }) {
   const [accountType, setAccountType] = useState("savings");
   const [ifsc, setIfsc] = useState("");
   const [bankAddress, setBankAddress] = useState("");
-  const [pan, setPan] = useState("");
   const [open, setOpen] = useState(false);
 
   const NAVY = "#1B2A6B";
   const LIGHT_NAVY = "#2A3F8F";
-  const ORANGE = "#F5820A";
 
   useEffect(() => {
     loadSavedData();
@@ -81,14 +79,14 @@ export default function BankDetailsScreen({ navigation }) {
   }
 
   function handleIfscChange(text) {
-  let upperText = text.toUpperCase();
-  if (upperText.length <= 11) {
-    setIfsc(upperText);
-    if (upperText.length === 11) {
-      fetchBankDetails(upperText);
+    let upperText = text.toUpperCase();
+    if (upperText.length <= 11) {
+      setIfsc(upperText);
+      if (upperText.length === 11) {
+        fetchBankDetails(upperText);
+      }
     }
   }
-}
 
   // function handleIfscChange(text) {
   //   let upperText = text.toUpperCase();
@@ -100,7 +98,7 @@ export default function BankDetailsScreen({ navigation }) {
 
   //   if (upperText.length <= 11) {
   //     setIfsc(upperText);
-    
+
   //   }
   // }
 
@@ -139,7 +137,6 @@ export default function BankDetailsScreen({ navigation }) {
     await AsyncStorage.setItem("accountType", accountType);
     await AsyncStorage.setItem("ifsc", ifsc);
     await AsyncStorage.setItem("bankAddress", bankAddress);
-    await AsyncStorage.setItem("bankName", selectedBank?.label || bankName);
 
     navigation.navigate("EmergencyContact");
   }
@@ -161,19 +158,17 @@ export default function BankDetailsScreen({ navigation }) {
   }
 
   async function fetchBankDetails(ifscCode) {
-  if (ifscCode.length === 11) {
-    try {
-       Alert.alert("Fetching", "Calling API for: " + ifscCode);
-      const res = await fetch(`https://ifsc.razorpay.com/${ifscCode}`);
-      const data = await res.json();
-       Alert.alert("Success", "Address: " + data.ADDRESS);
-      setBankAddress(data.ADDRESS || "");
-      setBankName(data.BANK || "");
-    } catch (e) {
-      Alert.alert("Error", e.message);
+    if (ifscCode.length === 11) {
+      try {
+        const res = await fetch(`https://ifsc.razorpay.com/${ifscCode}`);
+        const data = await res.json();
+        setBankAddress(data.ADDRESS || "");
+        if (!bankName) setBankName(data.BANK || "");
+      } catch (e) {
+        Alert.alert("Error", e.message);
+      }
     }
   }
-}
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -200,66 +195,64 @@ export default function BankDetailsScreen({ navigation }) {
           style={styles.body}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled={true}
-          
-         
         >
           <Text style={styles.label}>Bank Name</Text>
 
-         <DropDownPicker
-  open={open}
-  value={bankName}
-  items={items}
-  setOpen={setOpen}
-  setItems={setItems}
-  setValue={(callback) => {
-    const value = callback(bankName);
-    setBankName(value);
+          <DropDownPicker
+            open={open}
+            value={bankName}
+            items={items}
+            setOpen={setOpen}
+            setItems={setItems}
+            setValue={(callback) => {
+              const value = callback(bankName);
+              setBankName(value);
 
-    const selectedBank = items.find((b) => b.value === value);
+              const selectedBank = items.find((b) => b.value === value);
 
-    if (selectedBank) {
-      setIfsc(selectedBank.ifsc);
-    }
-  }}
-  searchable={true}
-  placeholder="Select Bank"
-  searchPlaceholder="Search bank"
-  listMode="FLATLIST"
-  modalProps={{
-    animationType: "slide",
-  }}
-  modalTitle="Select Bank"
-  style={styles.dropdown}
-  dropDownContainerStyle={styles.dropdownContainer}
-  placeholderStyle={{
-    color: "#2A3F8F",
-    fontSize: 13,
-  }}
-  selectedItemLabelStyle={{
-    color: "#1B2A6B",
-    fontWeight: "700",
-  }}
-  labelStyle={{
-    color: "#1B2A6B",
-    fontSize: 13,
-  }}
-  searchTextInputStyle={{
-    borderColor: "#D6DBF0",
-    color: "#1B2A6B",
-    fontSize: 13,
-  }}
-  listItemLabelStyle={{
-    color: "#1B2A6B",
-    fontSize: 13,
-  }}
-  selectedItemContainerStyle={{
-    backgroundColor: "#EEF1FB",
-  }}
-  itemSeparator={true}
-  itemSeparatorStyle={{
-    backgroundColor: "#D6DBF0",
-  }}
-/>
+              if (selectedBank) {
+                setIfsc(selectedBank.ifsc);
+              }
+            }}
+            searchable={true}
+            placeholder="Select Bank"
+            searchPlaceholder="Search bank"
+            listMode="FLATLIST"
+            modalProps={{
+              animationType: "slide",
+            }}
+            modalTitle="Select Bank"
+            style={styles.dropdown}
+            dropDownContainerStyle={styles.dropdownContainer}
+            placeholderStyle={{
+              color: "#2A3F8F",
+              fontSize: 13,
+            }}
+            selectedItemLabelStyle={{
+              color: "#1B2A6B",
+              fontWeight: "700",
+            }}
+            labelStyle={{
+              color: "#1B2A6B",
+              fontSize: 13,
+            }}
+            searchTextInputStyle={{
+              borderColor: "#D6DBF0",
+              color: "#1B2A6B",
+              fontSize: 13,
+            }}
+            listItemLabelStyle={{
+              color: "#1B2A6B",
+              fontSize: 13,
+            }}
+            selectedItemContainerStyle={{
+              backgroundColor: "#EEF1FB",
+            }}
+            itemSeparator={true}
+            itemSeparatorStyle={{
+              backgroundColor: "#D6DBF0",
+            }}
+          />
           <Text style={styles.label}>Account Number</Text>
 
           <TextInput
@@ -406,11 +399,11 @@ const styles = StyleSheet.create({
   },
 
   dropdownContainer: {
-  borderColor: "#D6DBF0",
-  maxHeight: 300,
-  zIndex: 9999,
-  elevation: 9999,
-},
+    borderColor: "#D6DBF0",
+    maxHeight: 300,
+    zIndex: 9999,
+    elevation: 9999,
+  },
 
   body: {
     paddingHorizontal: 20,

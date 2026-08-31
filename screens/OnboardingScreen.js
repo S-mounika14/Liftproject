@@ -79,9 +79,7 @@ export default function OnboardingScreen({ navigation }) {
         snapToInterval={ITEM_WIDTH + SPACING}
         decelerationRate="normal"
         bounces={false}
-        // contentContainerStyle={{
-        //     paddingHorizontal: (width - ITEM_WIDTH - SPACING) / 2,
-        // }}
+
 
         keyExtractor={(item) => item.id}
         onMomentumScrollEnd={(event) => {

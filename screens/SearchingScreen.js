@@ -1,30 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  PanResponder,
-} from 'react-native';
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, StyleSheet, Animated, PanResponder } from "react-native";
 
 // import MapView, { Marker, Polyline } from 'react-native-maps';
-import { LinearGradient } from 'expo-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ImageBackground } from 'react-native';
+import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ImageBackground } from "react-native";
 
 function DummyMap({ style }) {
   return (
     <ImageBackground
-      source={require('../assets/map1.jpg')}
-      style={[style, { flex: 1, width: '100%', height: '100%' }]}
+      source={require("../assets/map1.jpg")}
+      style={[style, { flex: 1, width: "100%", height: "100%" }]}
       resizeMode="cover"
-    >
-    </ImageBackground>
+    ></ImageBackground>
   );
 }
 
 export default function SearchingScreen({ route, navigation }) {
-
   const {
     vehicleType,
     currentCoords,
@@ -33,7 +25,7 @@ export default function SearchingScreen({ route, navigation }) {
     dropLabel,
   } = route.params;
 
-  const [dots, setDots] = useState('');
+  const [dots, setDots] = useState("");
 
   const loadingAnim = useRef(new Animated.Value(-160)).current;
   const bottomSheetAnim = useRef(new Animated.Value(0)).current;
@@ -41,18 +33,14 @@ export default function SearchingScreen({ route, navigation }) {
   const BOTTOM_SHEET_HEIGHT = 500;
 
   useEffect(() => {
-
     const dotsTimer = setInterval(() => {
-
-      setDots(prevDots => {
-
+      setDots((prevDots) => {
         if (prevDots.length >= 3) {
-          return '';
+          return "";
         }
 
-        return prevDots + '.';
+        return prevDots + ".";
       });
-
     }, 500);
 
     Animated.loop(
@@ -60,42 +48,46 @@ export default function SearchingScreen({ route, navigation }) {
         toValue: 320,
         duration: 2600,
         useNativeDriver: true,
-      })
+      }),
     ).start();
-
 
     const contributorTimer = setTimeout(async () => {
       try {
-        const contributorPlayerId = await AsyncStorage.getItem('contributorPlayerId');
-        console.log('Sending to contributor:', contributorPlayerId);
+        const contributorPlayerId = await AsyncStorage.getItem(
+          "contributorPlayerId",
+        );
+        console.log("Sending to contributor:", contributorPlayerId);
 
-        const response = await fetch('https://onesignal.com/api/v1/notifications', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'os_v2_app_4ha2ykw245er5bjvrx52gw22le37rt2gvz3uitvrtle5dca45uskpj5e25v3l5kkrc37mdjllb3stqrlrvp76ghzplx2ez4reo2pszi'
+        const response = await fetch(
+          "https://onesignal.com/api/v1/notifications",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "os_v2_app_4ha2ykw245er5bjvrx52gw22le37rt2gvz3uitvrtle5dca45uskpj5e25v3l5kkrc37mdjllb3stqrlrvp76ghzplx2ez4reo2pszi",
+            },
+            body: JSON.stringify({
+              app_id: "e1c1ac2a-dae7-491e-8535-8dfba35b5a59",
+              included_segments: ["All"],
+              headings: { en: "LiftPlz 🚗" },
+              contents: { en: "New ride request near you! Tap to accept." },
+              data: { screen: "RideAccepted" },
+            }),
           },
-          body: JSON.stringify({
-  app_id: 'e1c1ac2a-dae7-491e-8535-8dfba35b5a59',
-  included_segments: ['All'],
-  headings: { en: 'LiftPlz 🚗' },
-  contents: { en: 'New ride request near you! Tap to accept.' },
-  data: { screen: 'RideAccepted' }
-})
-        });
+        );
 
         const result = await response.json();
-        console.log('OneSignal Response:', JSON.stringify(result));
+        console.log("OneSignal Response:", JSON.stringify(result));
 
-        navigation.replace('RideAccepted', {
+        navigation.replace("RideAccepted", {
           pickupLabel,
           dropLabel,
           currentCoords,
           destinationCoords,
         });
-
       } catch (err) {
-        console.log('Error:', err);
+        console.log("Error:", err);
       }
     }, 15000);
 
@@ -115,43 +107,32 @@ export default function SearchingScreen({ route, navigation }) {
       clearInterval(dotsTimer);
       clearTimeout(contributorTimer);
     };
-
   }, []);
 
   // Bottom sheet drag
   const panResponder = PanResponder.create({
-
     onMoveShouldSetPanResponder: () => true,
 
     onPanResponderMove: (_, gestureState) => {
-
       if (gestureState.dy > 0) {
         bottomSheetAnim.setValue(gestureState.dy);
       }
-
     },
 
     onPanResponderRelease: (_, gestureState) => {
-
       if (gestureState.dy > 120) {
-
         Animated.timing(bottomSheetAnim, {
           toValue: BOTTOM_SHEET_HEIGHT,
           duration: 250,
           useNativeDriver: true,
         }).start();
-
       } else {
-
         Animated.spring(bottomSheetAnim, {
           toValue: 0,
           useNativeDriver: true,
         }).start();
-
       }
-
     },
-
   });
 
   const startPoint = currentCoords;
@@ -159,31 +140,24 @@ export default function SearchingScreen({ route, navigation }) {
   const destinationPoint = destinationCoords;
 
   const routeCoordinates = [
-
     startPoint,
 
     {
-      latitude:
-        (startPoint.latitude + destinationPoint.latitude) / 2,
+      latitude: (startPoint.latitude + destinationPoint.latitude) / 2,
 
-      longitude:
-        startPoint.longitude + 0.002,
+      longitude: startPoint.longitude + 0.002,
     },
 
     {
-      latitude:
-        (startPoint.latitude + destinationPoint.latitude) / 2 + 0.002,
+      latitude: (startPoint.latitude + destinationPoint.latitude) / 2 + 0.002,
 
-      longitude:
-        (startPoint.longitude + destinationPoint.longitude) / 2,
+      longitude: (startPoint.longitude + destinationPoint.longitude) / 2,
     },
 
     destinationPoint,
-
   ];
 
   const nearbyVehicles = [
-
     {
       id: 1,
       latitude: startPoint.latitude + 0.0015,
@@ -207,13 +181,10 @@ export default function SearchingScreen({ route, navigation }) {
       latitude: startPoint.latitude + 0.004,
       longitude: startPoint.longitude + 0.001,
     },
-
   ];
 
   return (
-
     <View style={styles.container}>
-
       <DummyMap style={styles.map} />
 
       {/* <MapView
@@ -277,34 +248,26 @@ export default function SearchingScreen({ route, navigation }) {
         ]}
         {...panResponder.panHandlers}
       >
-
         <View style={styles.dragHandle} />
 
-        <Text style={styles.heading}>
-          Finding nearby contributors{dots}
-        </Text>
+        <Text style={styles.heading}>Finding nearby contributors{dots}</Text>
 
         <View style={styles.loadingBarContainer}>
-
           <Animated.View
             style={{
               transform: [{ translateX: loadingAnim }],
             }}
           >
-
             <LinearGradient
-              colors={['#0B8F6A', '#1E88E5']}
+              colors={["#0B8F6A", "#1E88E5"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.loadingBar}
             />
-
           </Animated.View>
-
         </View>
 
         <View style={styles.detailsCard}>
-
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Ride Type</Text>
             <Text style={styles.detailValue}>{vehicleType}</Text>
@@ -319,18 +282,13 @@ export default function SearchingScreen({ route, navigation }) {
             <Text style={styles.detailLabel}>Estimated Wait</Text>
             <Text style={styles.detailValue}>3 mins</Text>
           </View>
-
         </View>
-
       </Animated.View>
-
     </View>
-
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
   },
@@ -340,7 +298,7 @@ const styles = StyleSheet.create({
   },
 
   vehicleMarker: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 6,
     borderRadius: 30,
     elevation: 5,
@@ -351,11 +309,11 @@ const styles = StyleSheet.create({
   },
 
   bottomSheet: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 18,
@@ -367,23 +325,23 @@ const styles = StyleSheet.create({
     width: 50,
     height: 5,
     borderRadius: 20,
-    backgroundColor: '#D8D8D8',
-    alignSelf: 'center',
+    backgroundColor: "#D8D8D8",
+    alignSelf: "center",
     marginBottom: 18,
   },
 
   heading: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#111',
+    fontWeight: "700",
+    color: "#111",
     marginBottom: 20,
   },
 
   loadingBarContainer: {
     height: 6,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: "#E5E5E5",
     borderRadius: 20,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 24,
   },
 
@@ -394,26 +352,25 @@ const styles = StyleSheet.create({
   },
 
   detailsCard: {
-    backgroundColor: '#F7F7F7',
+    backgroundColor: "#F7F7F7",
     borderRadius: 18,
     padding: 16,
   },
 
   detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 14,
   },
 
   detailLabel: {
-    color: '#777',
+    color: "#777",
     fontSize: 14,
   },
 
   detailValue: {
-    color: '#111',
-    fontWeight: '700',
+    color: "#111",
+    fontWeight: "700",
     fontSize: 14,
   },
-
 });

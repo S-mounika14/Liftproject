@@ -327,8 +327,7 @@ export default function DocumentsScreen({ navigation }) {
                   </Text>
                 )}
             </View>
-            {/* OTP */}
-            {/* OTP */}
+            
             {/* OTP */}
             <Text style={[styles.otpLabel, { marginTop: 16 }]}>Enter OTP</Text>
             <View style={styles.row}>
@@ -364,6 +363,8 @@ export default function DocumentsScreen({ navigation }) {
               </TouchableOpacity>
             </View>
             <View style={{ marginBottom: 16 }} />
+
+
             {/* PAN */}
             <View style={styles.card}>
               <View style={styles.rowTop}>
